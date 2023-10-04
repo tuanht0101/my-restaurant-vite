@@ -66,116 +66,117 @@ export default function ResetPassword({}: Props) {
     });
 
     return (
-        <div>
+        <Box
+            sx={{
+                backgroundColor: 'background.paper',
+                flex: '1 1 auto',
+                alignItems: 'center',
+                display: 'flex',
+                justifyContent: 'center',
+            }}
+        >
             <Box
                 sx={{
-                    backgroundColor: 'background.paper',
-                    flex: '1 1 auto',
-                    alignItems: 'center',
-                    display: 'flex',
-                    justifyContent: 'center',
+                    maxWidth: 550,
+                    px: 3,
+                    py: '100px',
+                    width: '100%',
+                    boxShadow: '0px 4px 80px 0px rgba(255, 159, 13, 0.15)',
                 }}
             >
-                <Box
-                    sx={{
-                        maxWidth: 550,
-                        px: 3,
-                        py: '100px',
-                        width: '100%',
-                    }}
-                >
-                    <div>
-                        <Stack spacing={1} sx={{ mb: 3 }}>
-                            <Typography variant="h4">Reset password</Typography>
-                            <Typography color="text.secondary" variant="body2">
-                                Don&apos;t have an account? &nbsp;
-                                <Link
-                                    href="/signup"
-                                    underline="hover"
-                                    variant="subtitle2"
-                                >
-                                    Register
-                                </Link>
-                            </Typography>
-                        </Stack>
+                <div>
+                    <Stack spacing={1} sx={{ mb: 3 }}>
+                        <Typography variant="h4">Reset password</Typography>
+                        <Typography color="text.secondary" variant="body2">
+                            Don&apos;t have an account? &nbsp;
+                            <Link
+                                href="/signup"
+                                underline="hover"
+                                variant="subtitle2"
+                            >
+                                Register
+                            </Link>
+                        </Typography>
+                    </Stack>
 
-                        <form noValidate onSubmit={formik.handleSubmit}>
-                            <Stack spacing={3}>
-                                <TextField
-                                    error={
-                                        !!(
-                                            formik.touched.email &&
-                                            formik.errors.email
-                                        )
-                                    }
-                                    fullWidth
-                                    helperText={
+                    <form noValidate onSubmit={formik.handleSubmit}>
+                        <Stack spacing={3}>
+                            <TextField
+                                error={
+                                    !!(
                                         formik.touched.email &&
                                         formik.errors.email
-                                    }
-                                    label="Email Address"
-                                    name="email"
-                                    onBlur={formik.handleBlur}
-                                    onChange={formik.handleChange}
-                                    type="email"
-                                    value={formik.values.email}
-                                />
-                                <TextField
-                                    error={
-                                        !!(
-                                            formik.touched.phonenumber &&
-                                            formik.errors.phonenumber
-                                        )
-                                    }
-                                    fullWidth
-                                    helperText={
+                                    )
+                                }
+                                fullWidth
+                                helperText={
+                                    formik.touched.email && formik.errors.email
+                                }
+                                label="Email Address"
+                                name="email"
+                                onBlur={formik.handleBlur}
+                                onChange={formik.handleChange}
+                                type="email"
+                                value={formik.values.email}
+                            />
+                            <TextField
+                                error={
+                                    !!(
                                         formik.touched.phonenumber &&
                                         formik.errors.phonenumber
-                                    }
-                                    label="Account's Phonenumber"
-                                    name="phonenumber"
-                                    onBlur={formik.handleBlur}
-                                    onChange={formik.handleChange}
-                                    type="phonenumber"
-                                    value={formik.values.phonenumber}
-                                />
-                            </Stack>
-                            <Typography
-                                color="text.secondary"
-                                variant="body2"
-                                sx={{ mt: 1 }}
-                            >
-                                Already have an account? &nbsp;
-                                <Link
-                                    href="/signin"
-                                    underline="hover"
-                                    variant="subtitle2"
-                                >
-                                    Login here
-                                </Link>
-                            </Typography>
-                            {formik.errors.submit && (
-                                <Typography
-                                    color="error"
-                                    sx={{ mt: 3 }}
-                                    variant="body2"
-                                >
-                                    {formik.errors.submit}
-                                </Typography>
-                            )}
-                            <Button
+                                    )
+                                }
                                 fullWidth
-                                size="large"
-                                sx={{ mt: 3 }}
-                                type="submit"
-                                variant="contained"
+                                helperText={
+                                    formik.touched.phonenumber &&
+                                    formik.errors.phonenumber
+                                }
+                                label="Account's Phonenumber"
+                                name="phonenumber"
+                                onBlur={formik.handleBlur}
+                                onChange={formik.handleChange}
+                                type="phonenumber"
+                                value={formik.values.phonenumber}
+                            />
+                        </Stack>
+                        <Typography
+                            color="text.secondary"
+                            variant="body2"
+                            sx={{ mt: 1 }}
+                        >
+                            Already have an account? &nbsp;
+                            <Link
+                                href="/signin"
+                                underline="hover"
+                                variant="subtitle2"
                             >
-                                Send mail
-                            </Button>
-                        </form>
-                    </div>
-                </Box>
+                                Login here
+                            </Link>
+                        </Typography>
+                        {formik.errors.submit && (
+                            <Typography
+                                color="error"
+                                sx={{ mt: 3 }}
+                                variant="body2"
+                            >
+                                {formik.errors.submit}
+                            </Typography>
+                        )}
+                        <Button
+                            fullWidth
+                            size="large"
+                            sx={{ mt: 3 }}
+                            type="submit"
+                            variant="contained"
+                            style={{
+                                backgroundColor: '#FF9F0D',
+                            }}
+                        >
+                            Send mail
+                        </Button>
+                    </form>
+                </div>
             </Box>
-        </div>
+        </Box>
     );
 }

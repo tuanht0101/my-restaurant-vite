@@ -80,6 +80,7 @@ export default function SignIn({}: Props) {
                         px: 3,
                         py: '100px',
                         width: '100%',
+                        boxShadow: '0px 4px 80px 0px rgba(255, 159, 13, 0.15)',
                     }}
                 >
                     <div>
@@ -167,6 +168,9 @@ export default function SignIn({}: Props) {
                                 sx={{ mt: 3 }}
                                 type="submit"
                                 variant="contained"
+                                style={{
+                                    backgroundColor: '#FF9F0D',
+                                }}
                             >
                                 Login
                             </Button>
