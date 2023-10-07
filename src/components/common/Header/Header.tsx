@@ -15,10 +15,10 @@ export default function Header({}: Props) {
     const accessToken = localStorage.getItem('access_token');
 
     useEffect(() => {
-        if (accessToken) {
-            setIsLoggedIn(true);
-        } else {
+        if (accessToken == null || accessToken == '') {
             setIsLoggedIn(false);
+        } else {
+            setIsLoggedIn(true);
         }
     }, [accessToken]);
 
@@ -36,6 +36,7 @@ export default function Header({}: Props) {
             .then((response) => {
                 localStorage.setItem('access_token', '');
                 localStorage.setItem('refresh_token', '');
+                setIsShowDropdown(false);
                 navigate('/signin');
             })
             .catch((error) => {
@@ -56,7 +57,7 @@ export default function Header({}: Props) {
                     render={(attrs) => (
                         <div tabIndex={-1} {...attrs} className="">
                             <Wrapper>
-                                {accessToken == null ? (
+                                {!isLoggedIn ? (
                                     <div>
                                         <p className="cursor-pointer hover:opacity-[0.7]">
                                             Sign in
