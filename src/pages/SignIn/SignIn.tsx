@@ -15,10 +15,12 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useAuthStore from '../../store/authStore';
 
 type Props = {};
 
 export default function SignIn({}: Props) {
+    const logIn = useAuthStore((state: any) => state.logIn);
     const navigate = useNavigate();
     const formik = useFormik({
         initialValues: {
@@ -45,7 +47,7 @@ export default function SignIn({}: Props) {
 
                 localStorage.setItem('access_token', res.data.access_token);
                 localStorage.setItem('refresh_token', res.data.refresh_token);
-
+                logIn();
                 navigate('/');
             } catch (err: any) {
                 helpers.setStatus({ success: false });

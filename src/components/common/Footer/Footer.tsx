@@ -1,10 +1,8 @@
-import { Link } from '@mui/material';
-
 type Props = {};
 
 export default function Footer({}: Props) {
     return (
-        <div className="bg-[#0D0D0D] w-full">
+        <div className="fixed bottom-0 bg-[#0D0D0D] w-full">
             <div className="flex justify-between py-[1.81rem] mx-[24rem]  border-b border-[#FF9F0D]">
                 <div>
                     <div className="flex flex-row text-2xl font-bold">

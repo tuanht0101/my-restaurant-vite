@@ -6,7 +6,7 @@ type Props = {
 
 function Wrapper({ children }: Props) {
     return (
-        <div className="flex flex-col w-full max-h-[calc((100vh - 96px) - 60px),734px] min-h-100px pt-8 rounded-md bg-white shadow-md">
+        <div className="flex flex-col w-full max-h-[calc((100vh - 96px) - 60px),734px] min-h-100px pt-4 px-2 rounded-md bg-white shadow-md">
             {children}
         </div>
     );

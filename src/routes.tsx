@@ -4,6 +4,7 @@ import SignUp from './pages/SignUp/SignUp';
 import SignIn from './pages/SignIn/SignIn';
 import ResetPassword from './pages/ResetPassword/ResetPassword';
 import { Navigate, useRoutes } from 'react-router-dom';
+import User from './pages/User/User';
 
 export default function Routes() {
     const isAuthenticated = () => {
@@ -64,6 +65,10 @@ export default function Routes() {
         {
             path: '/',
             element: <ProtectedRoute element={<Home />} />,
+        },
+        {
+            path: '/users',
+            element: <ProtectedRoute element={<User />} adminOnly={true} />,
         },
     ];
 
