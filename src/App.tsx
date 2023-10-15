@@ -9,19 +9,21 @@ import useAuthStore from './store/authStore';
 
 function App() {
     const loggedIn = useAuthStore((state: any) => state.loggedIn);
+    const accessToken = localStorage.getItem('access_token');
+
     return (
-        <div className="flex flex-col h-full my-[6rem]">
+        <div className="flex h-full">
             <BrowserRouter>
-                <div className="flex flex-col h-full">
+                {loggedIn && <SideNav />}
+                <div className="flex flex-col flex-1">
                     <Header />
-                    <div className="flex flex-row h-full">
-                        {loggedIn && <SideNav />}
-                        <div className="flex flex-col h-full flex-1">
+                    <div className="flex flex-col flex-1 mt-[6rem]">
+                        <div className="flex-auto p-3">
                             <RefreshToken />
                             <Routes />
                         </div>
+                        {!loggedIn && <Footer />}
                     </div>
-                    {!loggedIn && <Footer />}
                 </div>
             </BrowserRouter>
         </div>

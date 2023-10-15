@@ -17,6 +17,7 @@ type Props = {};
 export default function Header({}: Props) {
     const [isShowDropdown, setIsShowDropdown] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [localAccessToken, setLocalAccessToken] = useState<any>('');
     const navigate = useNavigate();
     const loggedIn = useAuthStore((state: any) => state.loggedIn);
     const logOut = useAuthStore((state: any) => state.logOut);
@@ -38,12 +39,13 @@ export default function Header({}: Props) {
                 {},
                 {
                     headers: {
-                        Authorization: `Bearer ${accessToken}`,
+                        Authorization: `Bearer ${localAccessToken}`,
                     },
                 }
             );
             localStorage.setItem('access_token', '');
             localStorage.setItem('refresh_token', '');
+            localStorage.setItem('role', '');
             logOut();
             setIsShowDropdown(false);
             navigate('/signin');
@@ -53,7 +55,7 @@ export default function Header({}: Props) {
     };
 
     return (
-        <div className="fixed top-0 left-0 right-0 flex justify-between px-[18.75rem] py-[1.81rem] bg-[#0D0D0D] w-full">
+        <div className="fixed top-0 right-0 flex justify-between px-[18.75rem] py-[1.81rem] bg-[#0D0D0D] w-full">
             <div className="flex flex-row text-2xl font-bold text-white">
                 <p>Mid</p>
                 <p className="text-[#FF9F0D]">taste</p>
@@ -69,7 +71,7 @@ export default function Header({}: Props) {
                                 <Wrapper>
                                     <div>
                                         <div
-                                            className="flex gap-2 items-center cursor-pointer mb-2 rounded-lg p-2 hover:opacity-[0.7] hover:bg-slate-500"
+                                            className="flex gap-2 items-center cursor-pointer mb-2 rounded-lg p-2 hover:opacity-[0.5] hover:bg-sky-500"
                                             onClick={() => {
                                                 // Handle account information click
                                             }}
@@ -80,7 +82,7 @@ export default function Header({}: Props) {
                                             </p>
                                         </div>
                                         <div
-                                            className="flex gap-2 items-center cursor-pointer mb-2 rounded-lg p-2 hover:opacity-[0.7] hover:bg-slate-500"
+                                            className="flex gap-2 items-center cursor-pointer mb-2 rounded-lg p-2 hover:opacity-[0.5] hover:bg-sky-500"
                                             onClick={handleSignOut}
                                         >
                                             <FontAwesomeIcon

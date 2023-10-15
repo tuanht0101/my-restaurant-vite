@@ -11,8 +11,8 @@ const useAuthStore = create(
             logOut: () => set({ loggedIn: false }),
         }),
         {
-            name: 'logged-storage', // unique name
-            storage: createJSONStorage(() => sessionStorage), // (optional) by default the 'localStorage' is used
+            name: 'logged-storage',
+            storage: createJSONStorage(() => sessionStorage),
         }
     )
 );

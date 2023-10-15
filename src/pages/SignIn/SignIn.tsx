@@ -22,6 +22,22 @@ type Props = {};
 export default function SignIn({}: Props) {
     const logIn = useAuthStore((state: any) => state.logIn);
     const navigate = useNavigate();
+
+    const getRoleFromToken = () => {
+        const accessToken = localStorage.getItem('access_token');
+        if (accessToken) {
+            try {
+                const tokenPayload = JSON.parse(
+                    atob(accessToken.split('.')[1])
+                );
+                return tokenPayload.role;
+            } catch (error) {
+                console.error('Error decoding access token:', error);
+            }
+        }
+        return null;
+    };
+
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -45,8 +61,18 @@ export default function SignIn({}: Props) {
                     }
                 );
 
-                localStorage.setItem('access_token', res.data.access_token);
-                localStorage.setItem('refresh_token', res.data.refresh_token);
+                await localStorage.setItem(
+                    'access_token',
+                    res.data.access_token
+                );
+                await localStorage.setItem(
+                    'refresh_token',
+                    res.data.refresh_token
+                );
+
+                const role = getRoleFromToken();
+                localStorage.setItem('role', role);
+
                 logIn();
                 navigate('/');
             } catch (err: any) {

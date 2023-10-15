@@ -30,6 +30,7 @@ const RefreshToken = () => {
                         'refresh_token',
                         response.data.refresh_token
                     );
+                    console.log('accessToken 2: ', response.data.access_token);
                 } catch (error) {
                     navigate('/signin');
                     console.error('Error refreshing token:', error);
@@ -38,7 +39,7 @@ const RefreshToken = () => {
         };
 
         // Set up interval to call refresh token every 14 minutes
-        const intervalId = setInterval(refreshAccessToken, 14 * 60 * 1000);
+        const intervalId = setInterval(refreshAccessToken, 1 * 60 * 1000);
 
         // Clean up the interval on component unmount
         return () => clearInterval(intervalId);
