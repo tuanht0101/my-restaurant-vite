@@ -7,6 +7,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faBars,
+    faKey,
     faRightFromBracket,
     faUser,
 } from '@fortawesome/free-solid-svg-icons';
@@ -39,19 +40,20 @@ export default function Header({}: Props) {
                 {},
                 {
                     headers: {
-                        Authorization: `Bearer ${localAccessToken}`,
+                        Authorization: `Bearer ${accessToken}`,
                     },
                 }
             );
-            localStorage.setItem('access_token', '');
-            localStorage.setItem('refresh_token', '');
-            localStorage.setItem('role', '');
             logOut();
             setIsShowDropdown(false);
-            navigate('/signin');
         } catch (error) {
             console.error('Error fetching data:', error);
         }
+
+        localStorage.setItem('access_token', '');
+        localStorage.setItem('refresh_token', '');
+        localStorage.setItem('role', '');
+        navigate('/signin');
     };
 
     return (
@@ -73,12 +75,23 @@ export default function Header({}: Props) {
                                         <div
                                             className="flex gap-2 items-center cursor-pointer mb-2 rounded-lg p-2 hover:opacity-[0.5] hover:bg-sky-500"
                                             onClick={() => {
-                                                // Handle account information click
+                                                navigate('/account');
                                             }}
                                         >
                                             <FontAwesomeIcon icon={faUser} />
                                             <p className="font-semibold">
                                                 Account Information
+                                            </p>
+                                        </div>
+                                        <div
+                                            className="flex gap-2 items-center cursor-pointer mb-2 rounded-lg p-2 hover:opacity-[0.5] hover:bg-sky-500"
+                                            onClick={() => {
+                                                navigate('/change-password');
+                                            }}
+                                        >
+                                            <FontAwesomeIcon icon={faKey} />
+                                            <p className="font-semibold">
+                                                Change password
                                             </p>
                                         </div>
                                         <div

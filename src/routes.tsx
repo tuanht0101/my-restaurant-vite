@@ -5,6 +5,13 @@ import SignIn from './pages/SignIn/SignIn';
 import ResetPassword from './pages/ResetPassword/ResetPassword';
 import { Navigate, useRoutes } from 'react-router-dom';
 import User from './pages/User/User';
+import Account from './pages/Account/Account';
+import ChangePassword from './pages/ChangePassword/ChangePassword';
+import Tables from './pages/Tables/Tables';
+import Categories from './pages/Categories/Categories';
+import Products from './pages/Products/Products';
+import Orders from './pages/Orders/Orders';
+import Bills from './pages/Bills/Bills';
 
 export default function Routes() {
     const isAuthenticated = () => {
@@ -63,12 +70,40 @@ export default function Routes() {
             element: <ResetPassword />,
         },
         {
+            path: '/change-password',
+            element: <ProtectedRoute element={<ChangePassword />} />,
+        },
+        {
             path: '/',
             element: <ProtectedRoute element={<Home />} />,
         },
         {
             path: '/users',
             element: <ProtectedRoute element={<User />} adminOnly={true} />,
+        },
+        {
+            path: '/account',
+            element: <ProtectedRoute element={<Account />} />,
+        },
+        {
+            path: '/tables',
+            element: <ProtectedRoute element={<Tables />} />,
+        },
+        {
+            path: '/categories',
+            element: <ProtectedRoute element={<Categories />} />,
+        },
+        {
+            path: '/products',
+            element: <ProtectedRoute element={<Products />} />,
+        },
+        {
+            path: '/orders',
+            element: <ProtectedRoute element={<Orders />} />,
+        },
+        {
+            path: '/bills',
+            element: <ProtectedRoute element={<Bills />} />,
         },
     ];
 
