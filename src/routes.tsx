@@ -12,6 +12,7 @@ import Categories from './pages/Categories/Categories';
 import Products from './pages/Products/Products';
 import Orders from './pages/Orders/Orders';
 import Bills from './pages/Bills/Bills';
+import Overview from './pages/Overview/Overview';
 
 export default function Routes() {
     const isAuthenticated = () => {
@@ -75,7 +76,7 @@ export default function Routes() {
         },
         {
             path: '/',
-            element: <ProtectedRoute element={<Home />} />,
+            element: <ProtectedRoute element={<Overview />} />,
         },
         {
             path: '/users',

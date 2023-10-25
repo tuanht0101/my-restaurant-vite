@@ -3,14 +3,28 @@ import * as Yup from 'yup';
 import { Box, Button, Link, Stack, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Header from '../../components/common/Header/Header';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 type Props = {};
 
 export default function SignUp({}: Props) {
     const navigate = useNavigate();
+    const notify = () =>
+        toast.success('Register successfully! Redirecting to Login Page!!', {
+            position: 'top-center',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'light',
+        });
+
     const phoneRegExp =
         /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -25,7 +39,10 @@ export default function SignUp({}: Props) {
                 .max(255)
                 .required('Email is required'),
             fullname: Yup.string().max(255).required('Name is required'),
-            password: Yup.string().max(255).required('Password is required'),
+            password: Yup.string()
+                .min(8)
+                .max(16)
+                .required('Password is required'),
             phonenumber: Yup.string().matches(
                 phoneRegExp,
                 'Phone number is not valid'
@@ -45,7 +62,10 @@ export default function SignUp({}: Props) {
 
                 // localStorage.setItem('access_token', res.data.access_token);
                 // localStorage.setItem('refresh_token', res.data.refresh_token);
-                navigate('/signin');
+                notify();
+                setTimeout(() => {
+                    navigate('/signin');
+                }, 3000);
             } catch (err: any) {
                 helpers.setStatus({ success: false });
 
@@ -173,15 +193,22 @@ export default function SignUp({}: Props) {
                                     value={formik.values.phonenumber}
                                 />
                             </Stack>
-                            {formik.errors.submit && (
-                                <Typography
-                                    color="error"
-                                    sx={{ mt: 3 }}
-                                    variant="body2"
-                                >
-                                    {formik.errors.submit}
-                                </Typography>
-                            )}
+                            <Stack
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                {formik.errors.submit && (
+                                    <Typography
+                                        color="error"
+                                        sx={{ mt: 3 }}
+                                        variant="body2"
+                                    >
+                                        {formik.errors.submit}
+                                    </Typography>
+                                )}
+                            </Stack>
                             <Button
                                 fullWidth
                                 size="large"
@@ -194,6 +221,18 @@ export default function SignUp({}: Props) {
                             >
                                 Sign up
                             </Button>
+                            <ToastContainer
+                                position="top-center"
+                                autoClose={3000}
+                                hideProgressBar={false}
+                                newestOnTop={false}
+                                closeOnClick
+                                rtl={false}
+                                pauseOnFocusLoss
+                                draggable
+                                pauseOnHover
+                                theme="light"
+                            />
                         </form>
                     </div>
                 </Box>

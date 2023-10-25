@@ -14,6 +14,7 @@ import {
     Typography,
 } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useAuthStore from '../../store/authStore';
@@ -24,7 +25,19 @@ export default function ChangePassword({}: Props) {
     const logIn = useAuthStore((state: any) => state.logIn);
     const navigate = useNavigate();
     const notify = () =>
-        toast('Change password successfully! Redirecting to homepage!!');
+        toast.success(
+            'Change password successfully! Redirecting to homepage!!',
+            {
+                position: 'top-center',
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'light',
+            }
+        );
 
     const formik = useFormik({
         initialValues: {
@@ -62,7 +75,7 @@ export default function ChangePassword({}: Props) {
                 notify();
                 setTimeout(() => {
                     navigate('/');
-                }, 2000);
+                }, 3000);
             } catch (err: any) {
                 helpers.setStatus({ success: false });
 
@@ -173,15 +186,22 @@ export default function ChangePassword({}: Props) {
                                     value={formik.values.retypePassword}
                                 />
                             </Stack>
-                            {formik.errors.submit && (
-                                <Typography
-                                    color="error"
-                                    sx={{ mt: 3 }}
-                                    variant="body2"
-                                >
-                                    {formik.errors.submit}
-                                </Typography>
-                            )}
+                            <Stack
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                {formik.errors.submit && (
+                                    <Typography
+                                        color="error"
+                                        sx={{ mt: 3 }}
+                                        variant="body2"
+                                    >
+                                        {formik.errors.submit}
+                                    </Typography>
+                                )}
+                            </Stack>
                             <Button
                                 fullWidth
                                 size="large"
@@ -196,7 +216,7 @@ export default function ChangePassword({}: Props) {
                             </Button>
                             <ToastContainer
                                 position="top-center"
-                                autoClose={5000}
+                                autoClose={3000}
                                 hideProgressBar={false}
                                 newestOnTop={false}
                                 closeOnClick

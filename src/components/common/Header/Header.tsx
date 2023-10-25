@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faBars,
     faKey,
+    faL,
     faRightFromBracket,
     faUser,
 } from '@fortawesome/free-solid-svg-icons';
@@ -57,7 +58,13 @@ export default function Header({}: Props) {
     };
 
     return (
-        <div className="fixed top-0 right-0 flex justify-between px-[18.75rem] py-[1.81rem] bg-[#0D0D0D] w-full">
+        <div
+            className={
+                isLoggedIn
+                    ? `fixed top-0 right-0 flex justify-between pl-[450px] pr-[150px] py-[1.81rem] bg-[#0D0D0D] w-full z-[100]`
+                    : `fixed top-0 right-0 flex justify-between px-[18.75rem] py-[1.81rem] bg-[#0D0D0D] w-full z-[100]`
+            }
+        >
             <div className="flex flex-row text-2xl font-bold text-white">
                 <p>Mid</p>
                 <p className="text-[#FF9F0D]">taste</p>
@@ -76,6 +83,7 @@ export default function Header({}: Props) {
                                             className="flex gap-2 items-center cursor-pointer mb-2 rounded-lg p-2 hover:opacity-[0.5] hover:bg-sky-500"
                                             onClick={() => {
                                                 navigate('/account');
+                                                setIsShowDropdown(false);
                                             }}
                                         >
                                             <FontAwesomeIcon icon={faUser} />
@@ -87,6 +95,7 @@ export default function Header({}: Props) {
                                             className="flex gap-2 items-center cursor-pointer mb-2 rounded-lg p-2 hover:opacity-[0.5] hover:bg-sky-500"
                                             onClick={() => {
                                                 navigate('/change-password');
+                                                setIsShowDropdown(false);
                                             }}
                                         >
                                             <FontAwesomeIcon icon={faKey} />
@@ -114,7 +123,7 @@ export default function Header({}: Props) {
                         <FontAwesomeIcon
                             icon={faBars}
                             style={{ color: '#ebecf0' }}
-                            className="p-2 cursor-pointer hover:opacity-[0.7] rounded-full"
+                            className={`p-2 cursor-pointer hover:opacity-[0.7] rounded-full `}
                             size="xl"
                             onClick={() => setIsShowDropdown(!isShowDropdown)}
                         />

@@ -73,8 +73,10 @@ export default function SignIn({}: Props) {
                 const role = getRoleFromToken();
                 localStorage.setItem('role', role);
 
-                logIn();
-                navigate('/');
+                setTimeout(() => {
+                    logIn();
+                    navigate('/');
+                }, 300);
             } catch (err: any) {
                 helpers.setStatus({ success: false });
 
@@ -182,15 +184,22 @@ export default function SignIn({}: Props) {
                                     Reset it here
                                 </Link>
                             </Typography>
-                            {formik.errors.submit && (
-                                <Typography
-                                    color="error"
-                                    sx={{ mt: 3 }}
-                                    variant="body2"
-                                >
-                                    {formik.errors.submit}
-                                </Typography>
-                            )}
+                            <Stack
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                {formik.errors.submit && (
+                                    <Typography
+                                        color="error"
+                                        sx={{ mt: 3 }}
+                                        variant="body2"
+                                    >
+                                        {formik.errors.submit}
+                                    </Typography>
+                                )}
+                            </Stack>
                             <Button
                                 fullWidth
                                 size="large"

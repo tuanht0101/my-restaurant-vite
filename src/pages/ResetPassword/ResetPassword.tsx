@@ -15,13 +15,29 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 type Props = {};
 
 export default function ResetPassword({}: Props) {
     const navigate = useNavigate();
+
+    const notify = () =>
+        toast.success('Email sent successfully! Redirecting to LogIn Page!!', {
+            position: 'top-center',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'light',
+        });
+
     const phoneRegExp =
         /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -47,7 +63,10 @@ export default function ResetPassword({}: Props) {
                         phonenumber: formik.values.phonenumber,
                     }
                 );
-                navigate('/login');
+                notify();
+                setTimeout(() => {
+                    navigate('/login');
+                }, 3000);
             } catch (err: any) {
                 helpers.setStatus({ success: false });
 
@@ -153,15 +172,22 @@ export default function ResetPassword({}: Props) {
                                 Login here
                             </Link>
                         </Typography>
-                        {formik.errors.submit && (
-                            <Typography
-                                color="error"
-                                sx={{ mt: 3 }}
-                                variant="body2"
-                            >
-                                {formik.errors.submit}
-                            </Typography>
-                        )}
+                        <Stack
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                            }}
+                        >
+                            {formik.errors.submit && (
+                                <Typography
+                                    color="error"
+                                    sx={{ mt: 3 }}
+                                    variant="body2"
+                                >
+                                    {formik.errors.submit}
+                                </Typography>
+                            )}
+                        </Stack>
                         <Button
                             fullWidth
                             size="large"
@@ -174,6 +200,18 @@ export default function ResetPassword({}: Props) {
                         >
                             Send mail
                         </Button>
+                        <ToastContainer
+                            position="top-center"
+                            autoClose={3000}
+                            hideProgressBar={false}
+                            newestOnTop={false}
+                            closeOnClick
+                            rtl={false}
+                            pauseOnFocusLoss
+                            draggable
+                            pauseOnHover
+                            theme="light"
+                        />
                     </form>
                 </div>
             </Box>
