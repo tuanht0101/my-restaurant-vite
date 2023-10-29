@@ -15,8 +15,9 @@ import {
 import axios from 'axios';
 import { useFormik } from 'formik';
 import PropTypes from 'prop-types';
-import type { FC } from 'react';
-import { toast } from 'react-hot-toast';
+import { useEffect, type FC } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import * as Yup from 'yup';
 
 interface TableModalProps {
@@ -29,13 +30,34 @@ interface TableModalProps {
 export const TableModal: FC<TableModalProps> = (props) => {
     const accessToken = localStorage.getItem('access_token');
 
+    const notifyFail = () =>
+        toast.error('There are some errors! Please try again!', {
+            position: 'top-center',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'light',
+        });
+
     const formik = useFormik({
+        enableReinitialize: true,
         initialValues: {
-            name: '',
-            capacity: '',
-            tableType: '',
-            availableStatus: '',
-            activeStatus: '',
+            name: props.data?.name || '',
+            capacity: props.data?.capacity || '',
+            tableType: props.data?.isPrivate === true ? 'vip' : 'normal',
+            availableStatus: props.data?.isPrivate
+                ? props.data.isPrivate
+                    ? 'vip'
+                    : 'normal'
+                : '',
+            activeStatus: props.data?.isActive
+                ? props.data.isActive === true
+                    ? 'active'
+                    : 'inactive'
+                : '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('This field is required'),
@@ -45,39 +67,86 @@ export const TableModal: FC<TableModalProps> = (props) => {
             const isPrivateStatus = formik.values.tableType === 'normal';
             const isAvailable = formik.values.availableStatus === 'available';
             const isActive = formik.values.activeStatus === 'active';
-            try {
-                const response = await axios.post(
-                    `${import.meta.env.VITE_API_URL}/table`,
-                    {
-                        name: formik.values.name,
-                        capacity: parseInt(formik.values.capacity, 10),
-                        isPrivate: isPrivateStatus,
-                        isAvailable: isAvailable,
-                        isActive: isActive,
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
+            if (!props.data) {
+                try {
+                    const response = await axios.post(
+                        `${import.meta.env.VITE_API_URL}/table`,
+                        {
+                            name: formik.values.name,
+                            capacity: parseInt(formik.values.capacity, 10),
+                            isPrivate: isPrivateStatus,
+                            isAvailable: isAvailable,
+                            isActive: isActive,
                         },
-                    }
-                );
-
-                props.onSubmitData(values as any);
-                resetForm();
-                props.onClose();
-                console.log('respone data', response.data);
-            } catch (error) {
-                console.error('Error fetching tables:', error);
+                        {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`,
+                            },
+                        }
+                    );
+                    console.log('respone data', response.data);
+                } catch (error) {
+                    console.error('Error fetching tables:', error);
+                    notifyFail();
+                }
+            } else {
+                try {
+                    const response = await axios.patch(
+                        `${import.meta.env.VITE_API_URL}/table/${
+                            props.data.id
+                        }`,
+                        {
+                            name: formik.values.name,
+                            capacity: parseInt(formik.values.capacity, 10),
+                            isPrivate: isPrivateStatus,
+                            isAvailable: isAvailable,
+                            isActive: isActive,
+                        },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`,
+                            },
+                        }
+                    );
+                    console.log('respone data', response.data);
+                } catch (error) {
+                    console.error('Error fetching tables:', error);
+                    notifyFail();
+                }
             }
-            console.log(formik.values.name);
-            console.log('type of name:', typeof formik.values.name);
-            console.log(formik.values.capacity);
-            console.log('type of capacity:', typeof formik.values.capacity);
-            console.log(formik.values.tableType);
-            console.log(formik.values.availableStatus);
-            console.log(formik.values.activeStatus);
+
+            props.onSubmitData(values as any);
+            resetForm();
+            props.onClose();
         },
     });
+
+    useEffect(() => {
+        // Update formik values when data prop changes
+        if (props.data) {
+            formik.setValues({
+                name: props.data?.name || '',
+                capacity: props.data?.capacity || '',
+                tableType: props.data?.isPrivate === true ? 'vip' : 'normal',
+                availableStatus:
+                    props.data?.isAvailable === true
+                        ? 'available'
+                        : 'unavailable',
+                activeStatus:
+                    props.data?.isActive === true ? 'active' : 'inactive',
+            });
+            formik.submitForm = async () => {};
+        } else {
+            // Set default values when there's no data prop
+            formik.setValues({
+                name: '',
+                capacity: '',
+                tableType: '',
+                availableStatus: '',
+                activeStatus: '',
+            });
+        }
+    }, [props.data]);
 
     const handleCloseModal = (e: any) => {
         formik.handleReset(e);
@@ -139,15 +208,21 @@ export const TableModal: FC<TableModalProps> = (props) => {
                                         formik.touched.name &&
                                             formik.errors.name
                                     )}
-                                    helperText={
-                                        formik.touched.name &&
-                                        formik.errors.name
-                                    }
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     value={formik.values.name}
                                     name="name"
                                 />
+                                {formik.touched.name && formik.errors.name && (
+                                    <div
+                                        style={{
+                                            color: 'red',
+                                            marginLeft: '4px',
+                                        }}
+                                    >
+                                        {formik.errors.name.toString()}
+                                    </div>
+                                )}
                             </Box>
                             <Box
                                 sx={{
@@ -163,15 +238,22 @@ export const TableModal: FC<TableModalProps> = (props) => {
                                         formik.touched.capacity &&
                                             formik.errors.capacity
                                     )}
-                                    helperText={
-                                        formik.touched.capacity &&
-                                        formik.errors.capacity
-                                    }
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     value={formik.values.capacity}
                                     name="capacity"
                                 />
+                                {formik.touched.capacity &&
+                                    formik.errors.capacity && (
+                                        <div
+                                            style={{
+                                                color: 'red',
+                                                marginLeft: '4px',
+                                            }}
+                                        >
+                                            {formik.errors.capacity.toString()}
+                                        </div>
+                                    )}
                             </Box>
                         </Box>
 
@@ -204,11 +286,6 @@ export const TableModal: FC<TableModalProps> = (props) => {
                                         value={formik.values.tableType}
                                         name="tableType"
                                     >
-                                        {/* {hinhThucCungCaps.map((h) => (
-                                            <MenuItem key={h.id} value={h.id}>
-                                                {h.name}
-                                            </MenuItem>
-                                        ))} */}
                                         <MenuItem
                                             key={'normal'}
                                             value={'normal'}
@@ -219,10 +296,12 @@ export const TableModal: FC<TableModalProps> = (props) => {
                                             VIP
                                         </MenuItem>
                                     </Select>
-                                    <FormHelperText>
-                                        {formik.touched.tableType &&
-                                            formik.errors.tableType}
-                                    </FormHelperText>
+                                    {formik.touched.tableType &&
+                                        formik.errors.tableType && (
+                                            <FormHelperText>
+                                                {formik.errors.tableType.toString()}
+                                            </FormHelperText>
+                                        )}
                                 </FormControl>
                             </Box>
                             <Box sx={{ width: '49%' }}>
@@ -259,10 +338,12 @@ export const TableModal: FC<TableModalProps> = (props) => {
                                             Unavailable
                                         </MenuItem>
                                     </Select>
-                                    <FormHelperText>
-                                        {formik.touched.availableStatus &&
-                                            formik.errors.availableStatus}
-                                    </FormHelperText>
+                                    {formik.touched.availableStatus &&
+                                        formik.errors.availableStatus && (
+                                            <FormHelperText>
+                                                {formik.errors.availableStatus.toString()}
+                                            </FormHelperText>
+                                        )}
                                 </FormControl>
                             </Box>
                         </Box>
@@ -312,10 +393,12 @@ export const TableModal: FC<TableModalProps> = (props) => {
                                             Inactive
                                         </MenuItem>
                                     </Select>
-                                    <FormHelperText>
-                                        {formik.touched.activeStatus &&
-                                            formik.errors.activeStatus}
-                                    </FormHelperText>
+                                    {formik.touched.activeStatus &&
+                                        formik.errors.activeStatus && (
+                                            <FormHelperText>
+                                                {formik.errors.activeStatus.toString()}
+                                            </FormHelperText>
+                                        )}
                                 </FormControl>
                             </Box>
                         </Box>
@@ -331,16 +414,28 @@ export const TableModal: FC<TableModalProps> = (props) => {
                             <Button
                                 variant="contained"
                                 type="submit"
-                                disabled={formik.isSubmitting}
+                                disabled={formik.isSubmitting || !formik.dirty}
                             >
-                                Lưu
+                                Save
                             </Button>
+                            <ToastContainer
+                                position="top-center"
+                                autoClose={3000}
+                                hideProgressBar={false}
+                                newestOnTop={false}
+                                closeOnClick
+                                rtl={false}
+                                pauseOnFocusLoss
+                                draggable
+                                pauseOnHover
+                                theme="light"
+                            />
                             <Button
                                 variant="outlined"
                                 sx={{ ml: 3 }}
                                 onClick={handleCloseModal}
                             >
-                                Đóng
+                                Close
                             </Button>
                         </Box>
                     </form>

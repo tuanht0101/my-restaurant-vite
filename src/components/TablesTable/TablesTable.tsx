@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     Box,
@@ -16,17 +16,26 @@ import {
 import { Scrollbar } from '../common/ScrollBar/Scrollbar';
 import { PencilAlt } from '../../icons/pencil-alt';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { TableModal } from '../modals/tableModal';
+import axios from 'axios';
 
-interface Table {
-    id: string;
-    name: string;
-    capacity: number;
-    isPrivate: boolean;
-    isAvailable: boolean;
-    isActive: boolean;
+interface TablesTableProps {
+    count?: number;
+    items?: any[];
+    onDeselectAll?: () => void;
+    onDeselectOne?: (tableId: string) => void;
+    onPageChange?: (event: any, value: number) => void;
+    onRowsPerPageChange?: (event: any) => void;
+    onSelectAll?: (itemIds: any[]) => any;
+    onSelectOne?: (tableId: string) => void;
+    page?: number;
+    rowsPerPage?: number;
+    selected?: string[];
+    handleDeleteModal?: (id: number) => void;
+    submitEditOpen?: (id: number) => void;
 }
 
-export const TablesTable = (props: any) => {
+export const TablesTable: FC<TablesTableProps> = (props) => {
     const {
         count = 0,
         items = [],
@@ -39,6 +48,8 @@ export const TablesTable = (props: any) => {
         page = 0,
         rowsPerPage = 0,
         selected = [],
+        submitEditOpen = (id: number) => {},
+        handleDeleteModal = (id: number) => {},
     } = props;
 
     const [localSelected, setLocalSelected] = useState<string[]>(selected);
@@ -48,18 +59,21 @@ export const TablesTable = (props: any) => {
     }, [selected]);
 
     const handleSelectAll = () => {
-        onSelectAll?.();
+        onSelectAll?.([]);
         setLocalSelected(items.map((table: any) => table.id));
+        console.log('123', localSelected);
     };
 
     const handleDeselectAll = () => {
         onDeselectAll?.();
         setLocalSelected([]);
+        console.log(localSelected);
     };
 
     const handleSelectOne = (tableId: string) => {
         onSelectOne?.(tableId);
         setLocalSelected((prevSelected) => [...prevSelected, tableId]);
+        console.log(localSelected);
     };
 
     const handleDeselectOne = (tableId: string) => {
@@ -67,6 +81,7 @@ export const TablesTable = (props: any) => {
         setLocalSelected((prevSelected) =>
             prevSelected.filter((id) => id !== tableId)
         );
+        console.log(localSelected);
     };
 
     return (
@@ -152,13 +167,21 @@ export const TablesTable = (props: any) => {
                                     )}
                                 </TableCell>
                                 <TableCell>
-                                    <IconButton component="button">
+                                    <IconButton
+                                        component="button"
+                                        onClick={() => submitEditOpen(table.id)}
+                                    >
                                         <PencilAlt
                                             fontSize="small"
                                             color="info"
                                         />
                                     </IconButton>
-                                    <IconButton component="button">
+                                    <IconButton
+                                        component="button"
+                                        onClick={() =>
+                                            handleDeleteModal(table.id)
+                                        }
+                                    >
                                         <DeleteIcon
                                             fontSize="small"
                                             color="error"

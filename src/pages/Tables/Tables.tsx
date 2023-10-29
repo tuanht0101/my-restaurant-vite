@@ -8,6 +8,9 @@ import {
     Select,
     TextField,
 } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import axios from 'axios';
 import { applyPagination } from '../../utils/apply-pagination';
 import SearchIcon from '@mui/icons-material/Search';
@@ -30,6 +33,7 @@ import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
 import { TableModal } from '../../components/modals/tableModal';
 import Delete from '@mui/icons-material/Delete';
+import { DeleteConfirmModal } from '../../components/common/modals/delete-confirm-modal';
 
 type Props = {};
 
@@ -39,6 +43,12 @@ const Tables: React.FC<Props> = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [tables, setTables] = useState([]);
     const [addModalOpen, setAddModalOpen] = useState(false);
+    const [addModalEditOpen, setAddModalEditOpen] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [openDeleteListModal, setOpenDeleteListModal] = useState(false);
+    const [isDeleteSubmit, setIsDeleteSubmit] = useState(false);
+    const [selectedModal, setSelectedModal] = useState<any>(null);
+    const [selectedDeleteId, setSelectedDeleteId] = useState<any>(null);
     const [draftValue, setDraftValue] = useState({
         search: '',
         type: '',
@@ -46,11 +56,65 @@ const Tables: React.FC<Props> = () => {
         active: '',
     });
 
-    const customers = applyPagination(tables, page, rowsPerPage); // Update this line
+    const customers = useMemo(
+        () => applyPagination(tables, page, rowsPerPage),
+        [tables, page, rowsPerPage]
+    );
     const customersIds = useCustomerIds(customers);
     const customersSelection = useSelection(customersIds);
 
     const accessToken = localStorage.getItem('access_token');
+
+    const notifyFail = () =>
+        toast.error('There are some errors! Please try again!', {
+            position: 'top-center',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'light',
+        });
+
+    const deleteData = async (id: number) => {
+        console.log(id);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/table/${id}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+    };
+
+    const fetchTable = async (id: number) => {
+        try {
+            const response = await axios.get(
+                `${import.meta.env.VITE_API_URL}/table/${id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+            setSelectedModal(response.data);
+            console.log(response);
+        } catch (error) {
+            console.error('Error fetching tables:', error);
+            setSelectedModal(null);
+        }
+    };
+
+    const handleModalEditOpen = useCallback(async (id: number) => {
+        setAddModalEditOpen(true);
+        console.log('id pa', id);
+        await fetchTable(id);
+    }, []);
+
+    const handleModalDeleteOpen = useCallback(async (id: number) => {
+        setOpenDeleteModal(true);
+        setSelectedDeleteId(id);
+        console.log('id delete', id);
+    }, []);
 
     useEffect(() => {
         const fetchTables = async () => {
@@ -69,9 +133,15 @@ const Tables: React.FC<Props> = () => {
                 setTables([]);
             }
         };
-
+        setIsDeleteSubmit(false);
         fetchTables();
-    }, [accessToken]);
+    }, [
+        accessToken,
+        addModalOpen,
+        addModalEditOpen,
+        openDeleteModal,
+        isDeleteSubmit,
+    ]);
 
     const handlePageChange = (event: any, value: any) => {
         setPage(value);
@@ -88,6 +158,20 @@ const Tables: React.FC<Props> = () => {
         setAddModalOpen(false);
     };
 
+    const handleEditModalClose = () => {
+        setAddModalEditOpen(false);
+        setSelectedModal(null);
+    };
+
+    const handleCloseDeleteModal = () => {
+        setOpenDeleteModal(false);
+        setSelectedDeleteId(null);
+    };
+
+    const cancelRemoveListData = () => {
+        setOpenDeleteListModal(false);
+    };
+
     const handleModalOpen = () => {
         setAddModalOpen(true);
     };
@@ -96,6 +180,11 @@ const Tables: React.FC<Props> = () => {
         console.log('click add');
         setAddModalOpen(false);
     };
+
+    const handleSubmitEditData = useCallback(() => {
+        console.log('click add', selectedModal);
+        setAddModalOpen(false);
+    }, []);
 
     const onChange = (value: string, name: string) => {
         setDraftValue({
@@ -135,6 +224,37 @@ const Tables: React.FC<Props> = () => {
             active: '',
         });
     }, []);
+
+    useEffect(() => {
+        console.log(selectedModal);
+    }, [selectedModal]);
+
+    const onDelete = () => {
+        console.log(selectedDeleteId);
+        deleteData(selectedDeleteId);
+        setOpenDeleteModal(false);
+    };
+
+    const confirmRemoveListData = async () => {
+        try {
+            console.log(customersSelection.selected);
+            await axios.post(
+                `${import.meta.env.VITE_API_URL}/table/deleteMany`,
+                {
+                    idList: customersSelection.selected,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+        } catch (error) {
+            notifyFail();
+        }
+        setOpenDeleteListModal(false);
+        setIsDeleteSubmit(true);
+    };
 
     return (
         <Box
@@ -184,7 +304,7 @@ const Tables: React.FC<Props> = () => {
                                     </SvgIcon>
                                 }
                                 variant="contained"
-                                // onClick={handleModalOpen}
+                                onClick={() => setOpenDeleteListModal(true)}
                                 disabled={
                                     customersSelection.selected.length
                                         ? false
@@ -336,11 +456,43 @@ const Tables: React.FC<Props> = () => {
                         page={page}
                         rowsPerPage={rowsPerPage}
                         selected={customersSelection.selected}
+                        handleDeleteModal={handleModalDeleteOpen}
+                        submitEditOpen={handleModalEditOpen}
                     />
                     <TableModal
                         isOpen={addModalOpen}
                         onClose={handleModalClose}
                         onSubmitData={handleSubmitData}
+                    />
+                    <TableModal
+                        data={selectedModal}
+                        isOpen={addModalEditOpen}
+                        onClose={handleEditModalClose}
+                        onSubmitData={handleSubmitEditData}
+                    />
+
+                    <DeleteConfirmModal
+                        isOpen={openDeleteListModal}
+                        onClose={cancelRemoveListData}
+                        onDelete={confirmRemoveListData}
+                    />
+                    <DeleteConfirmModal
+                        isOpen={openDeleteModal}
+                        onClose={handleCloseDeleteModal}
+                        onDelete={onDelete}
+                    />
+
+                    <ToastContainer
+                        position="top-center"
+                        autoClose={3000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                        theme="light"
                     />
                 </Stack>
             </Container>
