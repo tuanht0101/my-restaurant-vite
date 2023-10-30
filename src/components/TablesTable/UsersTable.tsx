@@ -20,7 +20,7 @@ import { TableModal } from '../modals/tableModal';
 import axios from 'axios';
 import useAuthorization from '../../hooks/authHooks';
 
-interface TablesTableProps {
+interface UsersTableProps {
     count?: number;
     items?: any[];
     onDeselectAll?: () => void;
@@ -36,7 +36,7 @@ interface TablesTableProps {
     submitEditOpen?: (id: number) => void;
 }
 
-export const TablesTable: FC<TablesTableProps> = (props) => {
+export const UsersTable: FC<UsersTableProps> = (props) => {
     const {
         count = 0,
         items = [],
@@ -62,7 +62,7 @@ export const TablesTable: FC<TablesTableProps> = (props) => {
 
     const handleSelectAll = () => {
         onSelectAll?.([]);
-        setLocalSelected(items.map((table: any) => table.id));
+        setLocalSelected(items.map((data: any) => data.id));
         console.log('123', localSelected);
     };
 
@@ -72,16 +72,16 @@ export const TablesTable: FC<TablesTableProps> = (props) => {
         console.log(localSelected);
     };
 
-    const handleSelectOne = (tableId: string) => {
-        onSelectOne?.(tableId);
-        setLocalSelected((prevSelected) => [...prevSelected, tableId]);
+    const handleSelectOne = (dataId: string) => {
+        onSelectOne?.(dataId);
+        setLocalSelected((prevSelected) => [...prevSelected, dataId]);
         console.log(localSelected);
     };
 
-    const handleDeselectOne = (tableId: string) => {
-        onDeselectOne?.(tableId);
+    const handleDeselectOne = (dataId: string) => {
+        onDeselectOne?.(dataId);
         setLocalSelected((prevSelected) =>
-            prevSelected.filter((id) => id !== tableId)
+            prevSelected.filter((id) => id !== dataId)
         );
         console.log(localSelected);
     };
@@ -114,69 +114,51 @@ export const TablesTable: FC<TablesTableProps> = (props) => {
                                     />
                                 </TableCell>
                             )}
-                            <TableCell>Name</TableCell>
-                            <TableCell>Capacity</TableCell>
-                            <TableCell>Table Type</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Active Status</TableCell>
+                            <TableCell>ID</TableCell>
+                            <TableCell>Email</TableCell>
+                            <TableCell>Role</TableCell>
+                            <TableCell>Full Name</TableCell>
+                            <TableCell>Phone Number</TableCell>
                             <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {items.map((table: any) => (
+                        {items.map((data: any) => (
                             <TableRow
                                 hover
-                                key={table.id}
-                                selected={localSelected.includes(table.id)}
+                                key={data.id}
+                                selected={localSelected.includes(data.id)}
                             >
                                 {isAdmin && (
                                     <TableCell padding="checkbox">
                                         <Checkbox
                                             checked={localSelected.includes(
-                                                table.id
+                                                data.id
                                             )}
                                             onChange={(event) => {
-                                                const tableId = table.id;
+                                                const dataId = data.id;
                                                 if (event.target.checked) {
-                                                    handleSelectOne(tableId);
+                                                    handleSelectOne(dataId);
                                                 } else {
-                                                    handleDeselectOne(tableId);
+                                                    handleDeselectOne(dataId);
                                                 }
                                             }}
                                         />
                                     </TableCell>
                                 )}
+                                <TableCell>{data.id}</TableCell>
                                 <TableCell>
                                     <Typography variant="subtitle2">
-                                        {table.name}
+                                        {data.email}
                                     </Typography>
                                 </TableCell>
-                                <TableCell>{table.capacity}</TableCell>
-                                <TableCell>
-                                    {table.isPrivate ? 'VIP' : 'Normal'}
-                                </TableCell>
-                                <TableCell>
-                                    {table.isAvailable ? (
-                                        <p className="text-[green]">
-                                            Available
-                                        </p>
-                                    ) : (
-                                        <p className="text-[red]">
-                                            Unavailable
-                                        </p>
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                    {table.isActive ? (
-                                        <p className="text-[green]">Active</p>
-                                    ) : (
-                                        <p className="text-[red]">Inactive</p>
-                                    )}
-                                </TableCell>
+                                <TableCell>{data.role}</TableCell>
+                                <TableCell>{data.fullname}</TableCell>
+                                <TableCell>{data.phonenumber}</TableCell>
                                 <TableCell>
                                     <IconButton
                                         component="button"
-                                        onClick={() => submitEditOpen(table.id)}
+                                        onClick={() => submitEditOpen(data.id)}
                                     >
                                         <PencilAlt
                                             fontSize="small"
@@ -187,7 +169,7 @@ export const TablesTable: FC<TablesTableProps> = (props) => {
                                         <IconButton
                                             component="button"
                                             onClick={() =>
-                                                handleDeleteModal(table.id)
+                                                handleDeleteModal(data.id)
                                             }
                                         >
                                             <DeleteIcon
@@ -216,7 +198,7 @@ export const TablesTable: FC<TablesTableProps> = (props) => {
     );
 };
 
-TablesTable.propTypes = {
+UsersTable.propTypes = {
     count: PropTypes.number,
     items: PropTypes.array,
     onDeselectAll: PropTypes.func,

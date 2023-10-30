@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TablesTable } from '../../components/TablesTable/TablesTable';
 import {
     FormControl,
-    Grid,
     InputLabel,
     MenuItem,
     Select,
@@ -14,8 +13,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { applyPagination } from '../../utils/apply-pagination';
 import SearchIcon from '@mui/icons-material/Search';
-// import { Table } from '../../type/Table.type';
-import { useCustomers } from '../../components/hooks/useDatas';
 import { useCustomerIds } from '../../components/hooks/useDataIds';
 import {
     Box,
@@ -24,16 +21,15 @@ import {
     Stack,
     SvgIcon,
     Typography,
-    useTheme, // Import useTheme
+    useTheme,
 } from '@mui/material';
 import { useSelection } from '../../components/hooks/use-selection';
 
-import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
-import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
 import { TableModal } from '../../components/modals/tableModal';
 import Delete from '@mui/icons-material/Delete';
 import { DeleteConfirmModal } from '../../components/common/modals/delete-confirm-modal';
+import useAuthorization from '../../hooks/authHooks';
 
 type Props = {};
 
@@ -55,6 +51,7 @@ const Tables: React.FC<Props> = () => {
         available: '',
         active: '',
     });
+    const { isAdmin } = useAuthorization();
 
     const customers = useMemo(
         () => applyPagination(tables, page, rowsPerPage),
@@ -282,39 +279,41 @@ const Tables: React.FC<Props> = () => {
                         <Stack spacing={1}>
                             <Typography variant="h4">Tables</Typography>
                         </Stack>
-                        <div className="mr-4">
-                            <Button
-                                startIcon={
-                                    <SvgIcon fontSize="small">
-                                        <PlusIcon />
-                                    </SvgIcon>
-                                }
-                                variant="contained"
-                                onClick={handleModalOpen}
-                                sx={{
-                                    marginRight: '8px',
-                                }}
-                            >
-                                Add
-                            </Button>
-                            <Button
-                                startIcon={
-                                    <SvgIcon fontSize="small">
-                                        <Delete />
-                                    </SvgIcon>
-                                }
-                                variant="contained"
-                                onClick={() => setOpenDeleteListModal(true)}
-                                disabled={
-                                    customersSelection.selected.length
-                                        ? false
-                                        : true
-                                }
-                                color="error"
-                            >
-                                Delete
-                            </Button>
-                        </div>
+                        {isAdmin && (
+                            <div className="mr-4">
+                                <Button
+                                    startIcon={
+                                        <SvgIcon fontSize="small">
+                                            <PlusIcon />
+                                        </SvgIcon>
+                                    }
+                                    variant="contained"
+                                    onClick={handleModalOpen}
+                                    sx={{
+                                        marginRight: '8px',
+                                    }}
+                                >
+                                    Add
+                                </Button>
+                                <Button
+                                    startIcon={
+                                        <SvgIcon fontSize="small">
+                                            <Delete />
+                                        </SvgIcon>
+                                    }
+                                    variant="contained"
+                                    onClick={() => setOpenDeleteListModal(true)}
+                                    disabled={
+                                        customersSelection.selected.length
+                                            ? false
+                                            : true
+                                    }
+                                    color="error"
+                                >
+                                    Delete
+                                </Button>
+                            </div>
+                        )}
                     </Stack>
                     <Box
                         display="flex"

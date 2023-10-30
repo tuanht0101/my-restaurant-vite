@@ -19,6 +19,7 @@ import { useEffect, type FC } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as Yup from 'yup';
+import useAuthorization from '../../hooks/authHooks';
 
 interface TableModalProps {
     data?: any;
@@ -29,6 +30,7 @@ interface TableModalProps {
 
 export const TableModal: FC<TableModalProps> = (props) => {
     const accessToken = localStorage.getItem('access_token');
+    const { isAdmin } = useAuthorization();
 
     const notifyFail = () =>
         toast.error('There are some errors! Please try again!', {
@@ -64,7 +66,7 @@ export const TableModal: FC<TableModalProps> = (props) => {
             capacity: Yup.number().required('This field is required'),
         }),
         onSubmit: async (values, { resetForm }) => {
-            const isPrivateStatus = formik.values.tableType === 'normal';
+            const isPrivateStatus = formik.values.tableType === 'vip';
             const isAvailable = formik.values.availableStatus === 'available';
             const isActive = formik.values.activeStatus === 'active';
             if (!props.data) {
@@ -90,28 +92,51 @@ export const TableModal: FC<TableModalProps> = (props) => {
                     notifyFail();
                 }
             } else {
-                try {
-                    const response = await axios.patch(
-                        `${import.meta.env.VITE_API_URL}/table/${
-                            props.data.id
-                        }`,
-                        {
-                            name: formik.values.name,
-                            capacity: parseInt(formik.values.capacity, 10),
-                            isPrivate: isPrivateStatus,
-                            isAvailable: isAvailable,
-                            isActive: isActive,
-                        },
-                        {
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`,
+                if (isAdmin) {
+                    try {
+                        const response = await axios.patch(
+                            `${import.meta.env.VITE_API_URL}/table/${
+                                props.data.id
+                            }`,
+                            {
+                                name: formik.values.name,
+                                capacity: parseInt(formik.values.capacity, 10),
+                                isPrivate: isPrivateStatus,
+                                isAvailable: isAvailable,
+                                isActive: isActive,
                             },
-                        }
-                    );
-                    console.log('respone data', response.data);
-                } catch (error) {
-                    console.error('Error fetching tables:', error);
-                    notifyFail();
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${accessToken}`,
+                                },
+                            }
+                        );
+                        console.log('respone data', response.data);
+                    } catch (error) {
+                        console.error('Error fetching tables:', error);
+                        notifyFail();
+                    }
+                } else {
+                    try {
+                        const response = await axios.patch(
+                            `${
+                                import.meta.env.VITE_API_URL
+                            }/table/updateStatus/${props.data.id}`,
+                            {
+                                isAvailable: isAvailable,
+                                isActive: isActive,
+                            },
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${accessToken}`,
+                                },
+                            }
+                        );
+                        console.log('respone data', response.data);
+                    } catch (error) {
+                        console.error('Error fetching tables:', error);
+                        notifyFail();
+                    }
                 }
             }
 
@@ -182,7 +207,9 @@ export const TableModal: FC<TableModalProps> = (props) => {
                             borderBottom: '1px solid #D9D9D9',
                         }}
                     >
-                        <Typography variant="h6">Add Table</Typography>
+                        <Typography variant="h6">
+                            {props.data ? 'Edit Table' : 'Add Table'}
+                        </Typography>
                         <Box sx={{ flexGrow: 1 }} />
                     </Box>
                     <Divider />
@@ -212,6 +239,7 @@ export const TableModal: FC<TableModalProps> = (props) => {
                                     onBlur={formik.handleBlur}
                                     value={formik.values.name}
                                     name="name"
+                                    disabled={!isAdmin}
                                 />
                                 {formik.touched.name && formik.errors.name && (
                                     <div
@@ -242,6 +270,7 @@ export const TableModal: FC<TableModalProps> = (props) => {
                                     onBlur={formik.handleBlur}
                                     value={formik.values.capacity}
                                     name="capacity"
+                                    disabled={!isAdmin}
                                 />
                                 {formik.touched.capacity &&
                                     formik.errors.capacity && (
@@ -285,6 +314,7 @@ export const TableModal: FC<TableModalProps> = (props) => {
                                         onBlur={formik.handleBlur}
                                         value={formik.values.tableType}
                                         name="tableType"
+                                        disabled={!isAdmin}
                                     >
                                         <MenuItem
                                             key={'normal'}
