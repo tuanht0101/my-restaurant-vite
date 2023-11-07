@@ -18,7 +18,7 @@ import { PencilAlt } from '../../icons/pencil-alt';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { TableModal } from '../modals/tableModal';
 import axios from 'axios';
-import useAuthorization from '../../hooks/authHooks';
+import useAuthorization from '../../hooks/authorizationHooks';
 
 interface TablesTableProps {
     count?: number;

@@ -66,9 +66,7 @@ export default function SideNav({}: Props) {
         <div className="bg-slate-500 w-[250px] flex flex-col h-full z-[999]">
             <div className="flex gap-2 text-xl justify-center items-center my-8">
                 <FontAwesomeIcon icon={faStore} style={{ color: '#ffffff' }} />
-                <p className="font-bold text-white">
-                    {role === 'ADMIN' ? 'Admin' : 'Staff'} Dashboard
-                </p>
+                <p className="font-bold text-white">{role} Dashboard</p>
             </div>
             <div className="mt-1">
                 {items.map((item) => (

@@ -19,7 +19,7 @@ import { useEffect, type FC } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as Yup from 'yup';
-import useAuthorization from '../../hooks/authHooks';
+import useAuthorization from '../../hooks/authorizationHooks';
 
 interface TableModalProps {
     data?: any;

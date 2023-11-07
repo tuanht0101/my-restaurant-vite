@@ -28,7 +28,7 @@ import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
 import { TableModal } from '../../components/modals/tableModal';
 import Delete from '@mui/icons-material/Delete';
 import { DeleteConfirmModal } from '../../components/common/modals/delete-confirm-modal';
-import useAuthorization from '../../hooks/authHooks';
+import useAuthorization from '../../hooks/authorizationHooks';
 import { UsersTable } from '../../components/TablesTable/UsersTable';
 import { UserModal } from '../../components/modals/userModal';
 
@@ -409,8 +409,8 @@ const User: React.FC<Props> = () => {
                             </Select>
                         </FormControl>
                         <Button
-                            startIcon={<SearchIcon />}
                             variant="contained"
+                            size="medium"
                             sx={{
                                 mr: 2,
                                 mt: 2,
@@ -420,9 +420,10 @@ const User: React.FC<Props> = () => {
                             Search
                         </Button>
                         <Button
+                            size="medium"
+                            color="error"
                             variant="outlined"
                             onClick={handleOpenDeleteSearch}
-                            color="error"
                             sx={{
                                 mr: 2,
                                 mt: 2,

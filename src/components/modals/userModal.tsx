@@ -19,7 +19,7 @@ import { useEffect, type FC } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as Yup from 'yup';
-import useAuthorization from '../../hooks/authHooks';
+import useAuthorization from '../../hooks/authorizationHooks';
 
 interface UserModalProps {
     data?: any;
@@ -31,9 +31,6 @@ interface UserModalProps {
 export const UserModal: FC<UserModalProps> = (props) => {
     const accessToken = localStorage.getItem('access_token');
     const { isAdmin } = useAuthorization();
-
-    const phoneRegExp =
-        /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
     const notifyFail = () =>
         toast.error('There are some errors! Please try again!', {
@@ -51,27 +48,21 @@ export const UserModal: FC<UserModalProps> = (props) => {
         enableReinitialize: true,
         initialValues: {
             email: props.data?.email || '',
-            password: '',
             role: props.data?.role || '',
-            fullname: props.data?.fullname || '',
+            name: props.data?.fullname || '',
             phonenumber: props.data?.phonenumber || '',
+            password: '',
         },
         validationSchema: Yup.object({
             email: Yup.string()
-                .email('Must be a valid email')
-                .max(255)
-                .required('Email is required'),
-            fullname: Yup.string().max(255).required('Name is required'),
-            phonenumber: Yup.string().matches(
-                phoneRegExp,
-                'Phone number is not valid'
-            ),
-            password: Yup.string()
-                .min(8)
-                .max(16)
-                .required('Password is required'),
+                .required('Email is required')
+                .email('Invalid email address'),
+            role: Yup.string().required('Role is required'),
+            name: Yup.string().required('Name is required'),
+            phonenumber: Yup.string().required('Phonenumber is required'),
         }),
         onSubmit: async (values, { resetForm }) => {
+            console.log('Submit button clicked!');
             if (!props.data) {
                 try {
                     const response = await axios.post(
@@ -80,7 +71,7 @@ export const UserModal: FC<UserModalProps> = (props) => {
                             email: formik.values.email,
                             password: formik.values.password,
                             role: formik.values.role,
-                            fullname: formik.values.fullname,
+                            fullname: formik.values.name,
                             phonenumber: formik.values.phonenumber,
                         },
                         {
@@ -100,7 +91,7 @@ export const UserModal: FC<UserModalProps> = (props) => {
                         `${import.meta.env.VITE_API_URL}/user/${props.data.id}`,
                         {
                             role: formik.values.role,
-                            fullname: formik.values.fullname,
+                            fullname: formik.values.name,
                             phonenumber: formik.values.phonenumber,
                         },
                         {
@@ -110,12 +101,22 @@ export const UserModal: FC<UserModalProps> = (props) => {
                         }
                     );
                     console.log('respone data', response.data);
+
+                    console.log('input: ', {
+                        role: formik.values.role,
+                        fullname: formik.values.name,
+                        phonenumber: formik.values.phonenumber,
+                    });
                 } catch (error) {
                     console.error('Error fetching tables:', error);
                     notifyFail();
                 }
             }
-
+            console.log('input: ', {
+                role: formik.values.role,
+                fullname: formik.values.name,
+                phonenumber: formik.values.phonenumber,
+            });
             props.onSubmitData(values as any);
             resetForm();
             props.onClose();
@@ -127,20 +128,19 @@ export const UserModal: FC<UserModalProps> = (props) => {
         if (props.data) {
             formik.setValues({
                 email: props.data?.email || '',
-                password: '',
                 role: props.data?.role || '',
-                fullname: props.data?.fullname || '',
+                name: props.data?.fullname || '',
                 phonenumber: props.data?.phonenumber || '',
+                password: '',
             });
-            formik.submitForm = async () => {};
         } else {
             // Set default values when there's no data prop
             formik.setValues({
                 email: '',
-                password: '',
                 role: '',
-                fullname: '',
+                name: '',
                 phonenumber: '',
+                password: '',
             });
         }
     }, [props.data]);
@@ -152,12 +152,7 @@ export const UserModal: FC<UserModalProps> = (props) => {
 
     return (
         <Modal open={props.isOpen} onClose={handleCloseModal}>
-            <Box
-                sx={{
-                    minHeight: '100%',
-                    p: 3,
-                }}
-            >
+            <Box sx={{ minHeight: '100%', p: 3 }}>
                 <Paper
                     elevation={12}
                     sx={{
@@ -184,7 +179,6 @@ export const UserModal: FC<UserModalProps> = (props) => {
                         </Typography>
                         <Box sx={{ flexGrow: 1 }} />
                     </Box>
-                    <Divider />
                     <form onSubmit={formik.handleSubmit}>
                         <Box
                             sx={{
@@ -193,14 +187,10 @@ export const UserModal: FC<UserModalProps> = (props) => {
                                 justifyContent: 'space-between',
                             }}
                         >
-                            <Box
-                                sx={{
-                                    width: '49%',
-                                }}
-                            >
+                            <Box sx={{ width: '49%' }}>
                                 <TextField
                                     label="Email"
-                                    placeholder="Fill User Email"
+                                    placeholder="Enter email"
                                     fullWidth
                                     required
                                     error={Boolean(
@@ -225,18 +215,43 @@ export const UserModal: FC<UserModalProps> = (props) => {
                                         </div>
                                     )}
                             </Box>
-                            <Box
-                                sx={{
-                                    width: '49%',
-                                }}
-                            >
-                                <FormControl
+                            <Box sx={{ width: '49%' }}>
+                                <TextField
+                                    label="Name"
+                                    placeholder="Enter name"
                                     fullWidth
+                                    required
                                     error={Boolean(
-                                        formik.touched.role &&
-                                            formik.errors.role
+                                        formik.touched.name &&
+                                            formik.errors.name
                                     )}
-                                >
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.name}
+                                    name="name"
+                                />
+                                {formik.touched.name && formik.errors.name && (
+                                    <div
+                                        style={{
+                                            color: 'red',
+                                            marginLeft: '4px',
+                                        }}
+                                    >
+                                        {formik.errors.name.toString()}
+                                    </div>
+                                )}
+                            </Box>
+                        </Box>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                px: 2,
+                                paddingBottom: 2,
+                            }}
+                        >
+                            <Box sx={{ width: '49%' }}>
+                                <FormControl fullWidth>
                                     <InputLabel id="demo-simple-select-label">
                                         Role
                                     </InputLabel>
@@ -250,12 +265,8 @@ export const UserModal: FC<UserModalProps> = (props) => {
                                         value={formik.values.role}
                                         name="role"
                                     >
-                                        <MenuItem key={'USER'} value={'USER'}>
-                                            USER
-                                        </MenuItem>
-                                        <MenuItem key={'ADMIN'} value={'ADMIN'}>
-                                            ADMIN
-                                        </MenuItem>
+                                        <MenuItem value="ADMIN">ADMIN</MenuItem>
+                                        <MenuItem value="USER">USER</MenuItem>
                                     </Select>
                                     {formik.touched.role &&
                                         formik.errors.role && (
@@ -265,48 +276,10 @@ export const UserModal: FC<UserModalProps> = (props) => {
                                         )}
                                 </FormControl>
                             </Box>
-                        </Box>
-
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                px: 2,
-                                paddingBottom: 2,
-                            }}
-                        >
                             <Box sx={{ width: '49%' }}>
                                 <TextField
-                                    label="Full Name"
-                                    placeholder="Enter Full Name"
-                                    fullWidth
-                                    required
-                                    error={Boolean(
-                                        formik.touched.fullname &&
-                                            formik.errors.fullname
-                                    )}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    value={formik.values.fullname}
-                                    name="fullname"
-                                    disabled={!isAdmin}
-                                />
-                                {formik.touched.fullname &&
-                                    formik.errors.fullname && (
-                                        <div
-                                            style={{
-                                                color: 'red',
-                                                marginLeft: '4px',
-                                            }}
-                                        >
-                                            {formik.errors.fullname.toString()}
-                                        </div>
-                                    )}
-                            </Box>
-                            <Box sx={{ width: '49%' }}>
-                                <TextField
-                                    label="Phone Number"
-                                    placeholder="Enter phone number ..."
+                                    label="Phonenumber"
+                                    placeholder="Enter phonenumber"
                                     fullWidth
                                     required
                                     error={Boolean(
@@ -317,7 +290,6 @@ export const UserModal: FC<UserModalProps> = (props) => {
                                     onBlur={formik.handleBlur}
                                     value={formik.values.phonenumber}
                                     name="phonenumber"
-                                    disabled={!isAdmin}
                                 />
                                 {formik.touched.phonenumber &&
                                     formik.errors.phonenumber && (
@@ -355,7 +327,6 @@ export const UserModal: FC<UserModalProps> = (props) => {
                                         onBlur={formik.handleBlur}
                                         value={formik.values.password}
                                         name="password"
-                                        disabled={!isAdmin}
                                     />
                                     {formik.touched.password &&
                                         formik.errors.password && (
@@ -371,7 +342,6 @@ export const UserModal: FC<UserModalProps> = (props) => {
                                 </Box>
                             </Box>
                         )}
-
                         <Box
                             sx={{
                                 alignItems: 'center',
@@ -386,20 +356,8 @@ export const UserModal: FC<UserModalProps> = (props) => {
                                 type="submit"
                                 disabled={formik.isSubmitting || !formik.dirty}
                             >
-                                Submit
+                                Save
                             </Button>
-                            <ToastContainer
-                                position="top-center"
-                                autoClose={3000}
-                                hideProgressBar={false}
-                                newestOnTop={false}
-                                closeOnClick
-                                rtl={false}
-                                pauseOnFocusLoss
-                                draggable
-                                pauseOnHover
-                                theme="light"
-                            />
                             <Button
                                 variant="outlined"
                                 sx={{ ml: 3 }}

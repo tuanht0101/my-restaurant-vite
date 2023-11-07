@@ -1,4 +1,4 @@
-import { Link } from '@mui/material';
+import { Avatar, Box, Link, Typography } from '@mui/material';
 import HeadlessTippy from '@tippyjs/react/headless';
 import { useEffect, useState } from 'react';
 import Wrapper from '../Popper/Wrapper';
@@ -13,6 +13,9 @@ import {
     faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import useAuthStore from '../../../store/authStore';
+import { AccountButton } from './AccountButton';
+import { UserCircle } from '../../../icons/user-circle';
+import useAuthen from '../../../hooks/authenHooks';
 
 type Props = {};
 
@@ -23,8 +26,32 @@ export default function Header({}: Props) {
     const navigate = useNavigate();
     const loggedIn = useAuthStore((state: any) => state.loggedIn);
     const logOut = useAuthStore((state: any) => state.logOut);
+    const [user, setUser] = useState<any>(null);
 
     const accessToken = localStorage.getItem('access_token');
+
+    const getInfo = async () => {
+        const res = await axios.get(
+            `${import.meta.env.VITE_API_URL}/auth/whoami`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            }
+        );
+
+        return res.data;
+    };
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            const currentUser = await getInfo();
+            setUser(currentUser);
+            console.log(currentUser);
+        };
+
+        fetchUserInfo();
+    }, [accessToken]);
 
     useEffect(() => {
         if (accessToken == null || accessToken === '') {
@@ -79,6 +106,56 @@ export default function Header({}: Props) {
                             <div tabIndex={-1} {...attrs}>
                                 <Wrapper>
                                     <div>
+                                        <Box
+                                            sx={{
+                                                alignItems: 'center',
+                                                p: 2,
+                                                display: 'flex',
+                                            }}
+                                        >
+                                            <Avatar
+                                                sx={{
+                                                    height: 40,
+                                                    width: 40,
+                                                    backgroundColor: 'white',
+                                                }}
+                                            >
+                                                <img
+                                                    src={
+                                                        '/static/default-avatar.jpg'
+                                                    }
+                                                    height={40}
+                                                    width={40}
+                                                    onError={(
+                                                        event: React.SyntheticEvent<HTMLImageElement>
+                                                    ) => {
+                                                        const target =
+                                                            event.target as HTMLImageElement;
+                                                        target.src =
+                                                            '/static/default-avatar.jpg';
+                                                    }}
+                                                    alt="User Avatar"
+                                                />
+                                                {!`/${user?.avatar}` && (
+                                                    <UserCircle fontSize="small" />
+                                                )}
+                                            </Avatar>
+                                            <Box
+                                                sx={{
+                                                    ml: 1,
+                                                }}
+                                            >
+                                                <Typography variant="body1">
+                                                    {user?.fullname}
+                                                </Typography>
+                                                <Typography
+                                                    color="textSecondary"
+                                                    variant="body2"
+                                                >
+                                                    {user?.role}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
                                         <div
                                             className="flex gap-2 items-center cursor-pointer mb-2 rounded-lg p-2 hover:opacity-[0.5] hover:bg-sky-500"
                                             onClick={() => {
@@ -120,13 +197,24 @@ export default function Header({}: Props) {
                         )}
                         onClickOutside={() => setIsShowDropdown(false)}
                     >
-                        <FontAwesomeIcon
-                            icon={faBars}
-                            style={{ color: '#ebecf0' }}
-                            className={`p-2 cursor-pointer hover:opacity-[0.7] rounded-full `}
-                            size="xl"
+                        {/* <AccountButton
+                        icon={faBars}
+                        style={{ color: '#ebecf0' }}
+                        className={`p-2 cursor-pointer hover:opacity-[0.7] rounded-full `}
+                        size="xl"
+                        onClick={() => setIsShowDropdown(!isShowDropdown)}
+                        /> */}
+                        <Avatar
+                            sx={{
+                                height: 40,
+                                width: 40,
+                            }}
+                            className="hover:opcatity-[0.5] cursor-pointer"
+                            src={'/static/default-avatar.jpg'}
                             onClick={() => setIsShowDropdown(!isShowDropdown)}
-                        />
+                        >
+                            <UserCircle fontSize="small" />
+                        </Avatar>
                     </HeadlessTippy>
                 </div>
             )}

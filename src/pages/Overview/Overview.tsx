@@ -138,7 +138,7 @@ export default function Overview({}: Props) {
             component="main"
             sx={{
                 flexGrow: 1,
-                py: 8,
+                py: 4,
             }}
         >
             <Container maxWidth="xl">
@@ -154,7 +154,7 @@ export default function Overview({}: Props) {
                                     : {})}
                                 positive={currentBudget - previousBudget > 0}
                                 sx={{ height: '100%' }}
-                                value={`$${currentBudget.toString()}`}
+                                value={`${currentBudget.toString()} VND`}
                             />
                         </Grid>
                     )}

@@ -10,9 +10,10 @@ import ChangePassword from './pages/ChangePassword/ChangePassword';
 import Tables from './pages/Tables/Tables';
 import Categories from './pages/Categories/Categories';
 import Products from './pages/Products/Products';
-import Orders from './pages/Orders/Orders';
 import Bills from './pages/Bills/Bills';
 import Overview from './pages/Overview/Overview';
+import ErrorPage from './pages/404/404';
+import OrderPage from './pages/Orders/Orders';
 
 export default function Routes() {
     const isAuthenticated = () => {
@@ -100,11 +101,15 @@ export default function Routes() {
         },
         {
             path: '/orders',
-            element: <ProtectedRoute element={<Orders />} />,
+            element: <ProtectedRoute element={<OrderPage />} />,
         },
         {
             path: '/bills',
             element: <ProtectedRoute element={<Bills />} />,
+        },
+        {
+            path: '/*',
+            element: <ErrorPage />,
         },
     ];
 

@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     Box,
@@ -13,14 +13,14 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-import { Scrollbar } from '../common/ScrollBar/Scrollbar';
-import { PencilAlt } from '../../icons/pencil-alt';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { PencilAlt } from '../../icons/pencil-alt';
 import { TableModal } from '../modals/tableModal';
+import { Scrollbar } from '../common/ScrollBar/Scrollbar';
 import axios from 'axios';
 import useAuthorization from '../../hooks/authorizationHooks';
 
-interface UsersTableProps {
+interface CategoryTableProps {
     count?: number;
     items?: any[];
     onDeselectAll?: () => void;
@@ -36,7 +36,7 @@ interface UsersTableProps {
     submitEditOpen?: (id: number) => void;
 }
 
-export const UsersTable: FC<UsersTableProps> = (props) => {
+export const CategoryTable: FC<CategoryTableProps> = (props) => {
     const {
         count = 0,
         items = [],
@@ -63,19 +63,16 @@ export const UsersTable: FC<UsersTableProps> = (props) => {
     const handleSelectAll = () => {
         onSelectAll?.([]);
         setLocalSelected(items.map((data: any) => data.id));
-        console.log('123', localSelected);
     };
 
     const handleDeselectAll = () => {
         onDeselectAll?.();
         setLocalSelected([]);
-        console.log(localSelected);
     };
 
     const handleSelectOne = (dataId: string) => {
         onSelectOne?.(dataId);
         setLocalSelected((prevSelected) => [...prevSelected, dataId]);
-        console.log(localSelected);
     };
 
     const handleDeselectOne = (dataId: string) => {
@@ -83,7 +80,6 @@ export const UsersTable: FC<UsersTableProps> = (props) => {
         setLocalSelected((prevSelected) =>
             prevSelected.filter((id) => id !== dataId)
         );
-        console.log(localSelected);
     };
 
     return (
@@ -92,34 +88,29 @@ export const UsersTable: FC<UsersTableProps> = (props) => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            {isAdmin && (
-                                <TableCell padding="checkbox">
-                                    <Checkbox
-                                        checked={
-                                            items.length > 0 &&
-                                            localSelected.length ===
-                                                items.length
+                            <TableCell padding="checkbox">
+                                <Checkbox
+                                    checked={
+                                        items.length > 0 &&
+                                        localSelected.length === items.length
+                                    }
+                                    indeterminate={
+                                        localSelected.length > 0 &&
+                                        localSelected.length < items.length
+                                    }
+                                    onChange={(event) => {
+                                        if (event.target.checked) {
+                                            handleSelectAll();
+                                        } else {
+                                            handleDeselectAll();
                                         }
-                                        indeterminate={
-                                            localSelected.length > 0 &&
-                                            localSelected.length < items.length
-                                        }
-                                        onChange={(event) => {
-                                            if (event.target.checked) {
-                                                handleSelectAll();
-                                            } else {
-                                                handleDeselectAll();
-                                            }
-                                        }}
-                                    />
-                                </TableCell>
-                            )}
-                            {/* <TableCell>ID</TableCell> */}
-                            <TableCell>Email</TableCell>
-                            <TableCell>Role</TableCell>
-                            <TableCell>Full Name</TableCell>
-                            <TableCell>Phone Number</TableCell>
-                            <TableCell>Action</TableCell>
+                                    }}
+                                />
+                            </TableCell>
+
+                            <TableCell sx={{ minWidth: 50 }}>ID</TableCell>
+                            <TableCell sx={{ minWidth: 150 }}>Name</TableCell>
+                            <TableCell sx={{ minWidth: 100 }}>Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -129,32 +120,28 @@ export const UsersTable: FC<UsersTableProps> = (props) => {
                                 key={data.id}
                                 selected={localSelected.includes(data.id)}
                             >
-                                {isAdmin && (
-                                    <TableCell padding="checkbox">
-                                        <Checkbox
-                                            checked={localSelected.includes(
-                                                data.id
-                                            )}
-                                            onChange={(event) => {
-                                                const dataId = data.id;
-                                                if (event.target.checked) {
-                                                    handleSelectOne(dataId);
-                                                } else {
-                                                    handleDeselectOne(dataId);
-                                                }
-                                            }}
-                                        />
-                                    </TableCell>
-                                )}
-                                {/* <TableCell>{data.id}</TableCell> */}
+                                <TableCell padding="checkbox">
+                                    <Checkbox
+                                        checked={localSelected.includes(
+                                            data.id
+                                        )}
+                                        onChange={(event) => {
+                                            const dataId = data.id;
+                                            if (event.target.checked) {
+                                                handleSelectOne(dataId);
+                                            } else {
+                                                handleDeselectOne(dataId);
+                                            }
+                                        }}
+                                    />
+                                </TableCell>
+
+                                <TableCell>{data.id}</TableCell>
                                 <TableCell>
                                     <Typography variant="subtitle2">
-                                        {data.email}
+                                        {data.name}
                                     </Typography>
                                 </TableCell>
-                                <TableCell>{data.role}</TableCell>
-                                <TableCell>{data.fullname}</TableCell>
-                                <TableCell>{data.phonenumber}</TableCell>
                                 <TableCell>
                                     <IconButton
                                         component="button"
@@ -165,19 +152,18 @@ export const UsersTable: FC<UsersTableProps> = (props) => {
                                             color="info"
                                         />
                                     </IconButton>
-                                    {isAdmin && (
-                                        <IconButton
-                                            component="button"
-                                            onClick={() =>
-                                                handleDeleteModal(data.id)
-                                            }
-                                        >
-                                            <DeleteIcon
-                                                fontSize="small"
-                                                color="error"
-                                            />
-                                        </IconButton>
-                                    )}
+
+                                    <IconButton
+                                        component="button"
+                                        onClick={() =>
+                                            handleDeleteModal(data.id)
+                                        }
+                                    >
+                                        <DeleteIcon
+                                            fontSize="small"
+                                            color="error"
+                                        />
+                                    </IconButton>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -198,7 +184,7 @@ export const UsersTable: FC<UsersTableProps> = (props) => {
     );
 };
 
-UsersTable.propTypes = {
+CategoryTable.propTypes = {
     count: PropTypes.number,
     items: PropTypes.array,
     onDeselectAll: PropTypes.func,
