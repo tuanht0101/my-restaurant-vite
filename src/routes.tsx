@@ -106,6 +106,12 @@ export default function Routes() {
         {
             path: '/bills',
             element: <ProtectedRoute element={<Bills />} />,
+            // children: [
+            //     {
+            //         path: ':id',
+            //         element:
+            //     }
+            // ]
         },
         {
             path: '/*',

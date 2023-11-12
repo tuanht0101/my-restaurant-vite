@@ -99,6 +99,7 @@ export const ListDataDetailTable: FC<ListDataTableProps> = (props) => {
                     );
                     setCount(res.data.length);
                     setDatas(res.data);
+                    setPage(1);
                 }
             } catch (error) {
                 console.error('Error fetching Users:', error);
@@ -155,6 +156,8 @@ export const ListDataDetailTable: FC<ListDataTableProps> = (props) => {
                 }
             );
             setDatas(response.data);
+            setCount(response.data.length);
+            setPage(1);
         } catch (error) {
             console.error('Error searching Users:', error);
         }

@@ -6,6 +6,8 @@ import Footer from './components/common/Footer/Footer';
 import RefreshToken from './components/common/RefreshToken/RefreshToken';
 import SideNav from './components/SideNav/SideNav';
 import useAuthStore from './store/authStore';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 function App() {
     const loggedIn = useAuthStore((state: any) => state.loggedIn);
@@ -14,17 +16,19 @@ function App() {
     return (
         <div className="flex h-full">
             <BrowserRouter>
-                {loggedIn && <SideNav />}
-                <div className="flex flex-col flex-1">
-                    <Header />
-                    <div className="flex flex-col flex-1 mt-[6rem]">
-                        <div className="flex-auto p-3">
-                            <RefreshToken />
-                            <Routes />
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    {loggedIn && <SideNav />}
+                    <div className="flex flex-col flex-1">
+                        <Header />
+                        <div className="flex flex-col flex-1 mt-[6rem]">
+                            <div className="flex-auto p-3">
+                                <RefreshToken />
+                                <Routes />
+                            </div>
+                            {!loggedIn && <Footer />}
                         </div>
-                        {!loggedIn && <Footer />}
                     </div>
-                </div>
+                </LocalizationProvider>
             </BrowserRouter>
         </div>
     );

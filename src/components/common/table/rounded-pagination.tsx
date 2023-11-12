@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import type { ChangeEvent, MouseEvent } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type RoundedTablePaginationProps = {
     count: number;
@@ -32,6 +32,10 @@ export const RoundedTablePagination: React.FC<RoundedTablePaginationProps> = ({
     rowsPerPageOptions = [5, 10, 25],
 }) => {
     const [currentPage, setCurrentPage] = useState(page);
+
+    useEffect(() => {
+        setCurrentPage(page);
+    }, [page]);
 
     const handlePageChange = (event: any, newPage: number) => {
         setCurrentPage(newPage);

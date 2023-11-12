@@ -12,6 +12,7 @@ import { ListDataTable } from '../../components/products/list-data';
 import { ListDataDetailTable } from '../../components/products/list-data-detail';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
 import { ProductModal } from '../../components/modals/ProductModal';
+import { ToastContainer } from 'react-toastify';
 
 export default function Products() {
     const [addModalOpen, setAddModalOpen] = useState(false);
@@ -120,6 +121,18 @@ export default function Products() {
                         isOpen={addModalOpen}
                         onClose={handleModalClose}
                         onSubmitData={handleSubmitData}
+                    />
+                    <ToastContainer
+                        position="top-center"
+                        autoClose={3000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                        theme="light"
                     />
                 </Container>
             </Box>

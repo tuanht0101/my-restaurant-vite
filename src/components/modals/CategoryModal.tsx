@@ -31,17 +31,22 @@ export const CategoryModal: FC<UserModalProps> = (props) => {
     const accessToken = localStorage.getItem('access_token');
     const { isAdmin } = useAuthorization();
 
-    const notifyFail = () =>
-        toast.error('There are some errors! Please try again!', {
-            position: 'top-center',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: 'light',
-        });
+    const notifyFail = (errorMessage?: string) => {
+        toast.error(
+            'Failed! ' + errorMessage ||
+                'There are some errors! Please try again!',
+            {
+                position: 'top-center',
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'light',
+            }
+        );
+    };
 
     const formik = useFormik({
         enableReinitialize: true,
@@ -67,9 +72,16 @@ export const CategoryModal: FC<UserModalProps> = (props) => {
                         }
                     );
                     console.log('respone data', response.data);
-                } catch (error) {
+                } catch (error: any) {
                     console.error('Error fetching tables:', error);
-                    notifyFail();
+
+                    // Check if the error has a response from the server
+                    if (error.response && error.response.data) {
+                        const errorMessage = error.response.data.message;
+                        notifyFail(errorMessage);
+                    } else {
+                        notifyFail(); // Fallback to the default error message
+                    }
                 }
             } else {
                 try {
@@ -91,9 +103,16 @@ export const CategoryModal: FC<UserModalProps> = (props) => {
                     console.log('input: ', {
                         name: formik.values.name,
                     });
-                } catch (error) {
+                } catch (error: any) {
                     console.error('Error fetching tables:', error);
-                    notifyFail();
+
+                    // Check if the error has a response from the server
+                    if (error.response && error.response.data) {
+                        const errorMessage = error.response.data.message;
+                        notifyFail(errorMessage);
+                    } else {
+                        notifyFail(); // Fallback to the default error message
+                    }
                 }
             }
             console.log('input: ', {
