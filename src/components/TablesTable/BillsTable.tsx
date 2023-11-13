@@ -13,6 +13,7 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
+import html2pdf from 'html2pdf.js';
 import { Scrollbar } from '../common/ScrollBar/Scrollbar';
 import { PencilAlt } from '../../icons/pencil-alt';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -57,7 +58,9 @@ export const BillsTable: FC<BillsTableProps> = (props) => {
 
     const [localSelected, setLocalSelected] = useState<string[]>(selected);
     const [filteredCount, setFilteredCount] = useState(count);
+    const [selectedModal, setSelectedModal] = useState<any>(null);
     const { isAdmin } = useAuthorization();
+    const accessToken = localStorage.getItem('access_token');
 
     useEffect(() => {
         setLocalSelected(selected);
@@ -96,7 +99,15 @@ export const BillsTable: FC<BillsTableProps> = (props) => {
 
     const formatCreatedAt = (createdAt: string) => {
         const date = new Date(createdAt);
-        return date.toLocaleString();
+        const options = {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        } as const;
+        return date.toLocaleDateString('en-GB', options);
     };
 
     const getStatusColor = (status: string) => {
@@ -111,6 +122,122 @@ export const BillsTable: FC<BillsTableProps> = (props) => {
                 return 'default';
         }
     };
+
+    const generateHtmlTemplate = () => {
+        if (!selectedModal) {
+            // Handle the case where selectedModal is null (e.g., fetch failed)
+            return '<html><body>Error loading data</body></html>';
+        }
+        return `
+            <html>
+                <head>
+                    <style>
+                        table {
+                            font-family: Arial, Helvetica, sans-serif;
+                            border-collapse: collapse;
+                            width: 100%;
+                        }
+
+                        h3 {
+                            margin-bottom: 10px;
+                            font-weight: bold;
+                        }
+    
+                        td, th {
+                            border: 1px solid #dddddd;
+                            text-align: left;
+                            padding: 8px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h3 style="text-align: center">Midtaste Restaurant</h3>
+                    <table>
+                        <tr>
+                            <th>Name: ${selectedModal.guessName}</th>
+                            <th>Status: ${selectedModal.status}</th>
+                        </tr>
+                        <tr>
+                            <th>Contact Number: ${
+                                selectedModal.guessNumber
+                            }</th>
+                            <th>Table: ${selectedModal.tableName}</th>
+                        </tr>
+                    </table>
+    
+                    <h3>Product Details:</h3>
+                    <table>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Sub total</th>
+                        </tr>
+                        ${JSON.parse(selectedModal.productDetails)
+                            .map(
+                                (item: any) => `
+                                    <tr>
+                                        <td>${item.name}</td>
+                                        <td>${item.category}</td>
+                                        <td>${item.quantity}</td>
+                                        <td>${item.price} VND</td>
+                                        <td>${
+                                            item.quantity * item.price
+                                        } VND</td>
+                                    </tr>
+                                `
+                            )
+                            .join('')}
+                    </table>
+                    <h3>Total: ${selectedModal.total} VND</h3>
+                    <h3>Date: ${formatCreatedAt(selectedModal.createdAt)}</h3>
+                    <h3>
+                        Thank you for supporting our restaurant. If there are any problems, we
+                        would love to hear from you at admin@midtaste.com
+                    </h3>
+                </body>
+            </html>
+        `;
+    };
+
+    const fetchBill = async (id: number) => {
+        try {
+            const response = await axios.get(
+                `${import.meta.env.VITE_API_URL}/bill/${id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+            setSelectedModal(response.data);
+            console.log(response);
+        } catch (error) {
+            console.error('Error fetching tables:', error);
+            setSelectedModal(null);
+        }
+    };
+
+    const downloadBill = async (id: number) => {
+        await fetchBill(id);
+    };
+
+    useEffect(() => {
+        if (selectedModal) {
+            const pdfElement = document.createElement('div');
+            pdfElement.innerHTML = generateHtmlTemplate();
+
+            html2pdf(pdfElement, {
+                margin: 10,
+                filename: `${selectedModal.uuid}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            });
+            console.log('123', selectedModal);
+        }
+    }, [selectedModal]);
 
     return (
         <Card>
@@ -179,24 +306,24 @@ export const BillsTable: FC<BillsTableProps> = (props) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {items.map((table: any) => (
+                        {items.map((item: any) => (
                             <TableRow
                                 hover
-                                key={table.id}
-                                selected={localSelected.includes(table.id)}
+                                key={item.id}
+                                selected={localSelected.includes(item.id)}
                             >
                                 {isAdmin && (
                                     <TableCell padding="checkbox">
                                         <Checkbox
                                             checked={localSelected.includes(
-                                                table.id
+                                                item.id
                                             )}
                                             onChange={(event) => {
-                                                const tableId = table.id;
+                                                const itemId = item.id;
                                                 if (event.target.checked) {
-                                                    handleSelectOne(tableId);
+                                                    handleSelectOne(itemId);
                                                 } else {
-                                                    handleDeselectOne(tableId);
+                                                    handleDeselectOne(itemId);
                                                 }
                                             }}
                                         />
@@ -204,34 +331,37 @@ export const BillsTable: FC<BillsTableProps> = (props) => {
                                 )}
                                 <TableCell>
                                     <Typography variant="subtitle2">
-                                        {table.guessName}
+                                        {item.guessName}
                                     </Typography>
                                 </TableCell>
-                                <TableCell>{table.guessNumber}</TableCell>
-                                <TableCell>{table.total} VND</TableCell>
-                                <TableCell>{table.createdBy}</TableCell>
+                                <TableCell>{item.guessNumber}</TableCell>
+                                <TableCell>{item.total} VND</TableCell>
+                                <TableCell>{item.createdBy}</TableCell>
                                 <TableCell>
-                                    {formatCreatedAt(table.createdAt)}
+                                    {formatCreatedAt(item.createdAt)}
                                 </TableCell>
                                 <TableCell>
                                     <Typography
                                         variant="subtitle2"
-                                        color={getStatusColor(table.status)}
+                                        color={getStatusColor(item.status)}
                                     >
-                                        {table.status}
+                                        {item.status}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
                                     <IconButton
                                         component="button"
-                                        onClick={() => submitEditOpen(table.id)}
+                                        onClick={() => submitEditOpen(item.id)}
                                     >
                                         <PencilAlt
                                             fontSize="small"
                                             color="info"
                                         />
                                     </IconButton>
-                                    <IconButton>
+                                    <IconButton
+                                        component="button"
+                                        onClick={() => downloadBill(item.id)}
+                                    >
                                         <FontAwesomeIcon
                                             icon={faFileInvoiceDollar}
                                             fontSize={'medium'}
@@ -242,7 +372,7 @@ export const BillsTable: FC<BillsTableProps> = (props) => {
                                         <IconButton
                                             component="button"
                                             onClick={() =>
-                                                handleDeleteModal(table.id)
+                                                handleDeleteModal(item.id)
                                             }
                                         >
                                             <DeleteIcon

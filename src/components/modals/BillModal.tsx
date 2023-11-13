@@ -39,13 +39,22 @@ interface BillModalProps {
 
 export const BillModal: FC<BillModalProps> = (props) => {
     const [orderItems, setOrderItems] = useState<any[]>([]);
+    const [currentTotal, setCurrentTotal] = useState(props.data?.total || 0);
 
     const accessToken = localStorage.getItem('access_token');
     const { isAdmin } = useAuthorization();
 
     const formatCreatedAt = (createdAt: string) => {
         const date = new Date(createdAt);
-        return date.toLocaleString();
+        const options = {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        } as const;
+        return date.toLocaleDateString('en-GB', options);
     };
 
     const notifyFail = () =>
@@ -80,14 +89,26 @@ export const BillModal: FC<BillModalProps> = (props) => {
             guessNumber: Yup.string().required('Phone Number is required'),
         }),
         onSubmit: async (values, { resetForm }) => {
+            console.log('orderItems:', orderItems);
+            const productDetailsString = JSON.stringify(
+                orderItems.map((item) => ({
+                    name: item.name,
+                    price: item.price,
+                    total: item.quantity * item.price,
+                    category: item.category,
+                    quantity: item.quantity,
+                }))
+            );
             console.log('Submit button clicked!');
             try {
                 const response = await axios.patch(
-                    `${import.meta.env.VITE_API_URL}/user/${props.data.id}`,
+                    `${import.meta.env.VITE_API_URL}/bill/${props.data.id}`,
                     {
                         guessName: formik.values.guessName,
                         guessNumber: formik.values.guessNumber,
-                        productDetails: formik.values.productDetails,
+                        productDetails: productDetailsString,
+                        total: currentTotal,
+                        status: formik.values.status,
                     },
                     {
                         headers: {
@@ -96,6 +117,12 @@ export const BillModal: FC<BillModalProps> = (props) => {
                     }
                 );
                 console.log('response data', response.data);
+                // console.log({
+                //     guessName: formik.values.guessName,
+                //     guessNumber: formik.values.guessNumber,
+                //     productDetails: orderItems,
+                //     total: currentTotal,
+                // });
             } catch (error) {
                 console.error('Error fetching tables:', error);
                 notifyFail();
@@ -120,7 +147,6 @@ export const BillModal: FC<BillModalProps> = (props) => {
                 guessNumber: props.data?.guessNumber || '',
                 status: props.data?.status || '',
                 total: props.data?.total || 0,
-
                 productDetails: Array.isArray(parsedProductDetails)
                     ? parsedProductDetails
                     : JSON.parse(props.data?.productDetails || '[]'),
@@ -128,6 +154,16 @@ export const BillModal: FC<BillModalProps> = (props) => {
                 newProductPrice: '',
                 newProductQuantity: '',
             });
+
+            // Initialize orderItems state with productDetails
+            setOrderItems(parsedProductDetails || []);
+
+            // Initialize currentTotal based on existing productDetails
+            const existingTotal = parsedProductDetails?.reduce(
+                (sum: number, product: any) => sum + product.total,
+                0
+            );
+            setCurrentTotal(existingTotal || 0);
         } else {
             // Set default values when there's no data prop
             formik.setValues({
@@ -138,12 +174,17 @@ export const BillModal: FC<BillModalProps> = (props) => {
                 guessNumber: '',
                 status: '',
                 total: 0,
-
                 productDetails: [],
                 newProductName: '',
                 newProductPrice: '',
                 newProductQuantity: '',
             });
+
+            // Initialize orderItems state as an empty array
+            setOrderItems([]);
+
+            // Initialize currentTotal as 0
+            setCurrentTotal(0);
         }
     }, [props.data]);
 
@@ -162,40 +203,49 @@ export const BillModal: FC<BillModalProps> = (props) => {
         }));
     };
 
-    const handleAddProductToOrder = (newProduct: any) => {
-        console.log(newProduct);
-        const existingProductIndex = formik.values.productDetails.findIndex(
-            (product: any) => product.name === newProduct.product
-        );
-
-        if (existingProductIndex !== -1) {
-            // Product already exists, update quantity
-            formik.setValues((prevValues) => {
-                const updatedProductDetails = [...prevValues.productDetails];
-                updatedProductDetails[existingProductIndex].quantity +=
-                    newProduct.quantity;
-                return {
-                    ...prevValues,
-                    productDetails: updatedProductDetails,
-                };
-            });
+    const handleAddProductToOrder = (newProduct: any[]) => {
+        if (newProduct.length > 0) {
+            const total = newProduct.reduce((sum, product) => {
+                return sum + product.price * product.quantity;
+            }, 0);
+            setCurrentTotal(total);
         } else {
-            // Product doesn't exist, add new row
-            const modifyNewProduct = {
-                ...newProduct,
-                name: newProduct.product,
-                category: newProduct.category.name,
-                quantity: newProduct.quantity || 1,
-            };
-
-            formik.setValues((prevValues) => ({
-                ...prevValues,
-                productDetails: [
-                    ...prevValues.productDetails,
-                    modifyNewProduct,
-                ],
-            }));
+            setCurrentTotal(0);
         }
+        console.log('from P: ', newProduct);
+        setOrderItems(newProduct);
+        // const existingProductIndex = formik.values.productDetails.findIndex(
+        //     (product: any) => product.name === newProduct.product
+        // );
+
+        // if (existingProductIndex !== -1) {
+        //     // Product already exists, update quantity
+        //     formik.setValues((prevValues) => {
+        //         const updatedProductDetails = [...prevValues.productDetails];
+        //         updatedProductDetails[existingProductIndex].quantity +=
+        //             newProduct.quantity;
+        //         return {
+        //             ...prevValues,
+        //             productDetails: updatedProductDetails,
+        //         };
+        //     });
+        // } else {
+        //     // Product doesn't exist, add new row
+        //     const modifyNewProduct = {
+        //         ...newProduct,
+        //         name: newProduct.product,
+        //         category: newProduct.category.name,
+        //         quantity: newProduct.quantity || 1,
+        //     };
+
+        //     formik.setValues((prevValues) => ({
+        //         ...prevValues,
+        //         productDetails: [
+        //             ...prevValues.productDetails,
+        //             modifyNewProduct,
+        //         ],
+        //     }));
+        // }
     };
 
     return (
@@ -438,145 +488,15 @@ export const BillModal: FC<BillModalProps> = (props) => {
                                         )}
                                 </Box>
                             </Box>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    px: 2,
-                                    paddingBottom: 2,
-                                }}
-                            >
-                                <Box sx={{ width: '100%' }}>
-                                    <Typography variant="h6" mb={2}>
-                                        Product Details
-                                    </Typography>
-                                    <TableContainer>
-                                        <Table>
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>
-                                                        Product
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        Category
-                                                    </TableCell>
-                                                    <TableCell>Price</TableCell>
-                                                    <TableCell>
-                                                        Quantity
-                                                    </TableCell>
-                                                    <TableCell>Total</TableCell>
-                                                    <TableCell>
-                                                        Action
-                                                    </TableCell>
-                                                </TableRow>
-                                            </TableHead>
-
-                                            <TableBody>
-                                                {Array.isArray(
-                                                    formik.values
-                                                        ?.productDetails
-                                                ) &&
-                                                formik.values?.productDetails
-                                                    .length > 0 ? (
-                                                    formik.values?.productDetails.map(
-                                                        (
-                                                            product: any,
-                                                            index: any
-                                                        ) => (
-                                                            <TableRow
-                                                                key={index}
-                                                            >
-                                                                <TableCell>
-                                                                    {
-                                                                        product.name
-                                                                    }
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    {
-                                                                        product.category
-                                                                    }
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    {
-                                                                        product.price
-                                                                    }
-                                                                    VND
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    {
-                                                                        product.quantity
-                                                                    }
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    {product.quantity *
-                                                                        product.price}
-                                                                    VND
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    <Button
-                                                                        variant="outlined"
-                                                                        color="error"
-                                                                        onClick={() =>
-                                                                            handleRemoveProduct(
-                                                                                index
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        Remove
-                                                                    </Button>
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        )
-                                                    )
-                                                ) : (
-                                                    <TableRow>
-                                                        <TableCell colSpan={3}>
-                                                            No product details
-                                                            available
-                                                        </TableCell>
-                                                    </TableRow>
-                                                )}
-                                            </TableBody>
-
-                                            <TableFooter>
-                                                <TableRow>
-                                                    <TableCell
-                                                        colSpan={4}
-                                                        align="right"
-                                                    >
-                                                        <strong>
-                                                            Total Sum:
-                                                        </strong>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <strong>
-                                                            {
-                                                                formik.values
-                                                                    .total
-                                                            }
-                                                            VND
-                                                        </strong>
-                                                    </TableCell>
-                                                    <TableCell></TableCell>
-                                                </TableRow>
-                                            </TableFooter>
-                                        </Table>
-
-                                        <Box
-                                            sx={{
-                                                width: '100%',
-                                                marginTop: '12px',
-                                            }}
-                                        >
-                                            <AddProduct
-                                                onAddProduct={
-                                                    handleAddProductToOrder
-                                                }
-                                            />
-                                        </Box>
-                                    </TableContainer>
-                                </Box>
+                            <Box sx={{ padding: 2 }}>
+                                <AddProduct
+                                    onAddProduct={handleAddProductToOrder}
+                                    productDetails={
+                                        formik.values.productDetails
+                                    }
+                                />
                             </Box>
+
                             <Box
                                 sx={{
                                     alignItems: 'center',

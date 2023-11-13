@@ -96,7 +96,7 @@ const Bills: React.FC<Props> = () => {
         });
     };
 
-    const fetchTable = async (id: number) => {
+    const fetchBill = async (id: number) => {
         try {
             const response = await axios.get(
                 `${import.meta.env.VITE_API_URL}/bill/${id}`,
@@ -117,7 +117,7 @@ const Bills: React.FC<Props> = () => {
     const handleModalEditOpen = useCallback(async (id: number) => {
         setAddModalEditOpen(true);
         console.log('id pa', id);
-        await fetchTable(id);
+        await fetchBill(id);
     }, []);
 
     const handleModalDeleteOpen = useCallback(async (id: number) => {
@@ -127,7 +127,7 @@ const Bills: React.FC<Props> = () => {
     }, []);
 
     useEffect(() => {
-        const fetchTables = async () => {
+        const fetchBills = async () => {
             try {
                 const response = await axios.get(
                     `${import.meta.env.VITE_API_URL}/bill`,
@@ -145,7 +145,7 @@ const Bills: React.FC<Props> = () => {
             }
         };
         setIsDeleteSubmit(false);
-        fetchTables();
+        fetchBills();
     }, [
         accessToken,
         addModalOpen,
