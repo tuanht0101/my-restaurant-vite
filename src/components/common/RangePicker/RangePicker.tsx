@@ -75,7 +75,7 @@ export default function RangePicker({
         >
             <DatePicker
                 format="dd/MM/yyyy"
-                label="Bắt đầu"
+                label="Start Date"
                 sx={{
                     '& .MuiInputLabel-root': {
                         color: isErrorOnStartDate ? 'red' : 'primary',
@@ -100,7 +100,7 @@ export default function RangePicker({
                 sx={{ ml: 1 }}
                 slotProps={{ textField: { size: 'small' } }}
                 format="dd/MM/yyyy"
-                label="Kết thúc"
+                label="End Date"
                 value={endDate}
                 onChange={(v: any) => onChange(v, 'endDate')}
             />
@@ -120,7 +120,7 @@ export default function RangePicker({
                         }`,
                     }}
                 >
-                    Ngày bắt đầu không hợp lệ
+                    Dates are not valid
                 </Typography>
             )}
         </Box>

@@ -93,11 +93,13 @@ export default function Routes() {
         },
         {
             path: '/categories',
-            element: <ProtectedRoute element={<Categories />} />,
+            element: (
+                <ProtectedRoute element={<Categories />} adminOnly={true} />
+            ),
         },
         {
             path: '/products',
-            element: <ProtectedRoute element={<Products />} />,
+            element: <ProtectedRoute element={<Products />} adminOnly={true} />,
         },
         {
             path: '/orders',

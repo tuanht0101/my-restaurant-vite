@@ -30,16 +30,6 @@ export default function SideNav({}: Props) {
             icon: <FontAwesomeIcon icon={faCouch} />,
         },
         {
-            title: 'Manage Categories',
-            path: '/categories',
-            icon: <FontAwesomeIcon icon={faBoxArchive} />,
-        },
-        {
-            title: 'Manage Products',
-            path: '/products',
-            icon: <FontAwesomeIcon icon={faUtensils} />,
-        },
-        {
             title: 'Manage Orders',
             path: '/orders',
             icon: <FontAwesomeIcon icon={faBowlFood} />,
@@ -54,6 +44,16 @@ export default function SideNav({}: Props) {
     if (role === 'ADMIN') {
         items = [
             ...items,
+            {
+                title: 'Manage Categories',
+                path: '/categories',
+                icon: <FontAwesomeIcon icon={faBoxArchive} />,
+            },
+            {
+                title: 'Manage Products',
+                path: '/products',
+                icon: <FontAwesomeIcon icon={faUtensils} />,
+            },
             {
                 title: 'Manage Users',
                 path: '/users',
