@@ -12,6 +12,7 @@ const ErrorPage: React.FC = () => (
                 display: 'flex',
                 flexGrow: 1,
                 minHeight: '100%',
+                marginTop: '-80px',
             }}
         >
             <Container maxWidth="md">

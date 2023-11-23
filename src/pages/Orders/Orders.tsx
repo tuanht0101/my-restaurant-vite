@@ -69,7 +69,7 @@ const OrderPage: React.FC = () => {
                     const res = await axios.get(
                         `${
                             import.meta.env.VITE_API_URL
-                        }/product/getByCategory/${selectedCategoryId}`,
+                        }/product/getAvailableByCategory/${selectedCategoryId}`,
                         {
                             headers: {
                                 Authorization: `Bearer ${accessToken}`,

@@ -59,10 +59,10 @@ export default function Routes() {
     };
 
     const router = [
-        {
-            path: '/signup',
-            element: <SignUp />,
-        },
+        // {
+        //     path: '/signup',
+        //     element: <SignUp />,
+        // },
         {
             path: '/signin',
             element: <SignIn />,

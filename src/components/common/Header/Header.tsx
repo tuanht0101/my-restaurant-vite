@@ -92,7 +92,10 @@ export default function Header({}: Props) {
                     : `fixed top-0 right-0 flex justify-between px-[18.75rem] py-[1.81rem] bg-[#0D0D0D] w-full z-[100]`
             }
         >
-            <div className="flex flex-row text-2xl font-bold text-white">
+            <div
+                className="flex flex-row text-2xl font-bold text-white cursor-pointer"
+                onClick={() => navigate('/')}
+            >
                 <p>Mid</p>
                 <p className="text-[#FF9F0D]">taste</p>
             </div>
