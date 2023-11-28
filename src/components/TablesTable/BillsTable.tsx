@@ -349,15 +349,19 @@ export const BillsTable: FC<BillsTableProps> = (props) => {
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <IconButton
-                                        component="button"
-                                        onClick={() => submitEditOpen(item.id)}
-                                    >
-                                        <PencilAlt
-                                            fontSize="small"
-                                            color="info"
-                                        />
-                                    </IconButton>
+                                    {item.status !== 'DONE' && (
+                                        <IconButton
+                                            component="button"
+                                            onClick={() =>
+                                                submitEditOpen(item.id)
+                                            }
+                                        >
+                                            <PencilAlt
+                                                fontSize="small"
+                                                color="info"
+                                            />
+                                        </IconButton>
+                                    )}
                                     <IconButton
                                         component="button"
                                         onClick={() => downloadBill(item.id)}

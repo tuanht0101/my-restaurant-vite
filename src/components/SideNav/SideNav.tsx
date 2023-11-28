@@ -25,14 +25,14 @@ export default function SideNav({}: Props) {
             icon: <FontAwesomeIcon icon={faChartLine} />,
         },
         {
+            title: 'Create Orders',
+            path: '/orders',
+            icon: <FontAwesomeIcon icon={faBowlFood} />,
+        },
+        {
             title: 'Manage Tables',
             path: '/tables',
             icon: <FontAwesomeIcon icon={faCouch} />,
-        },
-        {
-            title: 'Manage Orders',
-            path: '/orders',
-            icon: <FontAwesomeIcon icon={faBowlFood} />,
         },
         {
             title: 'Manage Bills',
