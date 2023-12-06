@@ -141,6 +141,7 @@ const Categories: React.FC<Props> = () => {
 
     const handlePageChange = (event: any, value: any) => {
         setPage(value);
+        console.log(event);
     };
 
     const handleRowsPerPageChange = useCallback(

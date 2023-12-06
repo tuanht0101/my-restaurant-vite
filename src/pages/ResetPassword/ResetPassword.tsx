@@ -57,6 +57,7 @@ export default function ResetPassword({}: Props) {
         }),
         onSubmit: async (values: any, helpers: any) => {
             try {
+                console.log(values);
                 setLoading(true);
                 const res = await axios.post(
                     `${import.meta.env.VITE_API_URL}/auth/reset-password`,

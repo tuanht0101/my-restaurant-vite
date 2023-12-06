@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     Box,
@@ -13,11 +13,8 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-import { Scrollbar } from '../common/ScrollBar/Scrollbar';
 import { PencilAlt } from '../../icons/pencil-alt';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { TableModal } from '../modals/tableModal';
-import axios from 'axios';
 import useAuthorization from '../../hooks/authorizationHooks';
 
 interface TablesTableProps {
@@ -49,8 +46,8 @@ export const TablesTable: FC<TablesTableProps> = (props) => {
         page = 0,
         rowsPerPage = 0,
         selected = [],
-        submitEditOpen = (id: number) => {},
-        handleDeleteModal = (id: number) => {},
+        submitEditOpen = () => {},
+        handleDeleteModal = () => {},
     } = props;
 
     const [localSelected, setLocalSelected] = useState<string[]>(selected);

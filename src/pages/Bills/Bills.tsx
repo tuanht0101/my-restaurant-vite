@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { TablesTable } from '../../components/TablesTable/TablesTable';
 import {
     FormControl,
     InputLabel,
@@ -12,7 +11,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import axios from 'axios';
 import { applyPagination } from '../../utils/apply-pagination';
-import SearchIcon from '@mui/icons-material/Search';
 import { useCustomerIds } from '../../components/hooks/useDataIds';
 import {
     Box,
@@ -24,9 +22,6 @@ import {
     useTheme,
 } from '@mui/material';
 import { useSelection } from '../../components/hooks/use-selection';
-
-import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import { TableModal } from '../../components/modals/tableModal';
 import Delete from '@mui/icons-material/Delete';
 import { DeleteConfirmModal } from '../../components/common/modals/delete-confirm-modal';
 import useAuthorization from '../../hooks/authorizationHooks';
@@ -158,6 +153,7 @@ const Bills: React.FC<Props> = () => {
     const handlePageChange = useCallback(
         (event: any, value: any) => {
             setPage(value);
+            console.log(event);
         },
         [tables]
     );
@@ -185,15 +181,6 @@ const Bills: React.FC<Props> = () => {
 
     const cancelRemoveListData = () => {
         setOpenDeleteListModal(false);
-    };
-
-    const handleModalOpen = () => {
-        setAddModalOpen(true);
-    };
-
-    const handleSubmitData = () => {
-        console.log('click add');
-        setAddModalOpen(false);
     };
 
     const handleSubmitEditData = useCallback(() => {

@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     Box,
@@ -14,10 +14,8 @@ import {
     Typography,
 } from '@mui/material';
 import html2pdf from 'html2pdf.js';
-import { Scrollbar } from '../common/ScrollBar/Scrollbar';
 import { PencilAlt } from '../../icons/pencil-alt';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { TableModal } from '../modals/tableModal';
 import axios from 'axios';
 import useAuthorization from '../../hooks/authorizationHooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -52,8 +50,8 @@ export const BillsTable: FC<BillsTableProps> = (props) => {
         page = 0,
         rowsPerPage = 0,
         selected = [],
-        submitEditOpen = (id: number) => {},
-        handleDeleteModal = (id: number) => {},
+        submitEditOpen = () => {},
+        handleDeleteModal = () => {},
     } = props;
 
     const [localSelected, setLocalSelected] = useState<string[]>(selected);

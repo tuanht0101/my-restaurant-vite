@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     Box,
@@ -15,10 +15,6 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { PencilAlt } from '../../icons/pencil-alt';
-import { TableModal } from '../modals/tableModal';
-import { Scrollbar } from '../common/ScrollBar/Scrollbar';
-import axios from 'axios';
-import useAuthorization from '../../hooks/authorizationHooks';
 
 interface CategoryTableProps {
     count?: number;
@@ -49,12 +45,11 @@ export const CategoryTable: FC<CategoryTableProps> = (props) => {
         page = 0,
         rowsPerPage = 0,
         selected = [],
-        submitEditOpen = (id: number) => {},
-        handleDeleteModal = (id: number) => {},
+        submitEditOpen = () => {},
+        handleDeleteModal = () => {},
     } = props;
 
     const [localSelected, setLocalSelected] = useState<string[]>(selected);
-    const { isAdmin } = useAuthorization();
 
     useEffect(() => {
         setLocalSelected(selected);

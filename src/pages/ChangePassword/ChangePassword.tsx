@@ -59,6 +59,7 @@ export default function ChangePassword({}: Props) {
         }),
         onSubmit: async (values: any, helpers: any) => {
             try {
+                console.log(values);
                 const accessToken = localStorage.getItem('access_token');
                 const res = await axios.patch(
                     `${import.meta.env.VITE_API_URL}/auth/change-password`,

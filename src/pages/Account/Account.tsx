@@ -1,15 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import {
-    Box,
-    Button,
-    FormControl,
-    FormHelperText,
-    InputLabel,
-    MenuItem,
-    Select,
-    TextField,
-    Typography,
-} from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Box, Button, FormControl, TextField, Typography } from '@mui/material';
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -125,6 +115,7 @@ export default function Account({}: Props) {
                 setTimeout(() => {
                     navigate(-1);
                 }, 4000);
+                console.log(values);
             } catch (err: any) {
                 helpers.setStatus({ success: false });
 
