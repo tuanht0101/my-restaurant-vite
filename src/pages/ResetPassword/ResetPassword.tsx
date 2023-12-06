@@ -22,6 +22,7 @@ type Props = {};
 
 export default function ResetPassword({}: Props) {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const notify = () =>
         toast.success('Email sent successfully! Redirecting to LogIn Page!!', {
@@ -56,6 +57,7 @@ export default function ResetPassword({}: Props) {
         }),
         onSubmit: async (values: any, helpers: any) => {
             try {
+                setLoading(true);
                 const res = await axios.post(
                     `${import.meta.env.VITE_API_URL}/auth/reset-password`,
                     {
@@ -65,7 +67,7 @@ export default function ResetPassword({}: Props) {
                 );
                 notify();
                 setTimeout(() => {
-                    navigate('/login');
+                    navigate('/signin');
                 }, 3000);
             } catch (err: any) {
                 helpers.setStatus({ success: false });
@@ -80,6 +82,8 @@ export default function ResetPassword({}: Props) {
                     });
                 }
                 helpers.setSubmitting(false);
+            } finally {
+                setLoading(false);
             }
         },
     });
@@ -106,7 +110,7 @@ export default function ResetPassword({}: Props) {
                 <div>
                     <Stack spacing={1} sx={{ mb: 3 }}>
                         <Typography variant="h4">Reset password</Typography>
-                        <Typography color="text.secondary" variant="body2">
+                        {/* <Typography color="text.secondary" variant="body2">
                             Don&apos;t have an account? &nbsp;
                             <Link
                                 href="/signup"
@@ -115,7 +119,7 @@ export default function ResetPassword({}: Props) {
                             >
                                 Register
                             </Link>
-                        </Typography>
+                        </Typography> */}
                     </Stack>
 
                     <form noValidate onSubmit={formik.handleSubmit}>
@@ -197,8 +201,9 @@ export default function ResetPassword({}: Props) {
                             style={{
                                 backgroundColor: '#FF9F0D',
                             }}
+                            disabled={loading}
                         >
-                            Send mail
+                            {loading ? 'Sending email...' : 'Send Email'}
                         </Button>
                         <ToastContainer
                             position="top-center"

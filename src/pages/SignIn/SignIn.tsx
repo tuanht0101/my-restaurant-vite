@@ -117,7 +117,7 @@ export default function SignIn({}: Props) {
                     <div>
                         <Stack spacing={1} sx={{ mb: 3 }}>
                             <Typography variant="h4">Login</Typography>
-                            <Typography color="text.secondary" variant="body2">
+                            {/* <Typography color="text.secondary" variant="body2">
                                 Don&apos;t have an account? &nbsp;
                                 <Link
                                     href="/signup"
@@ -126,7 +126,7 @@ export default function SignIn({}: Props) {
                                 >
                                     Register
                                 </Link>
-                            </Typography>
+                            </Typography> */}
                         </Stack>
 
                         <form noValidate onSubmit={formik.handleSubmit}>

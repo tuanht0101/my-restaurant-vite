@@ -174,7 +174,7 @@ export const BillsTable: FC<BillsTableProps> = (props) => {
                             <th>Price</th>
                             <th>Sub total</th>
                         </tr>
-                        ${JSON.parse(selectedModal.productDetails)
+                        ${selectedModal.productDetails
                             .map(
                                 (item: any) => `
                                     <tr>

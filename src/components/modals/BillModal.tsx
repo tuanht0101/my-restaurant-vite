@@ -57,6 +57,8 @@ export const BillModal: FC<BillModalProps> = (props) => {
         return date.toLocaleDateString('en-GB', options);
     };
 
+    console.log(props.data?.productDetails);
+
     const notifyFail = () =>
         toast.error('There are some errors! Please try again!', {
             position: 'top-center',
@@ -90,15 +92,15 @@ export const BillModal: FC<BillModalProps> = (props) => {
         }),
         onSubmit: async (values, { resetForm }) => {
             console.log('orderItems:', orderItems);
-            const productDetailsString = JSON.stringify(
-                orderItems.map((item) => ({
-                    name: item.name,
-                    price: item.price,
-                    total: item.quantity * item.price,
-                    category: item.category,
-                    quantity: item.quantity,
-                }))
-            );
+            const productDetailsString = Array.isArray(orderItems)
+                ? orderItems.map((item) => ({
+                      name: item.name,
+                      price: item.price,
+                      total: item.quantity * item.price,
+                      category: item.category,
+                      quantity: item.quantity,
+                  }))
+                : [];
             console.log('Submit button clicked!');
             try {
                 const response = await axios.patch(
@@ -106,7 +108,7 @@ export const BillModal: FC<BillModalProps> = (props) => {
                     {
                         guessName: formik.values.guessName,
                         guessNumber: formik.values.guessNumber,
-                        productDetails: productDetailsString,
+                        productDetails: JSON.stringify(productDetailsString),
                         total: currentTotal,
                         status: formik.values.status,
                     },
@@ -136,9 +138,6 @@ export const BillModal: FC<BillModalProps> = (props) => {
     useEffect(() => {
         // Update formik values when data prop changes
         if (props.data) {
-            const parsedProductDetails =
-                props.data?.productDetails &&
-                JSON.parse(props.data?.productDetails);
             formik.setValues({
                 uuid: props.data?.uuid || '',
                 guessName: props.data?.guessName || '',
@@ -147,22 +146,22 @@ export const BillModal: FC<BillModalProps> = (props) => {
                 guessNumber: props.data?.guessNumber || '',
                 status: props.data?.status || '',
                 total: props.data?.total || 0,
-                productDetails: Array.isArray(parsedProductDetails)
-                    ? parsedProductDetails
-                    : JSON.parse(props.data?.productDetails || '[]'),
+                productDetails: props.data?.productDetails,
                 newProductName: '',
                 newProductPrice: '',
                 newProductQuantity: '',
             });
 
             // Initialize orderItems state with productDetails
-            setOrderItems(parsedProductDetails || []);
+            setOrderItems(props.data?.productDetails || []);
 
             // Initialize currentTotal based on existing productDetails
-            const existingTotal = parsedProductDetails?.reduce(
-                (sum: number, product: any) => sum + product.total,
-                0
-            );
+            const existingTotal = props.data?.productDetails
+                ? props.data?.productDetails.reduce(
+                      (sum: number, product: any) => sum + product.total,
+                      0
+                  )
+                : 0;
             setCurrentTotal(existingTotal || 0);
         } else {
             // Set default values when there's no data prop
@@ -193,15 +192,15 @@ export const BillModal: FC<BillModalProps> = (props) => {
         props.onClose();
     };
 
-    const handleRemoveProduct = (index: number) => {
-        const updatedProductDetails = [...formik.values.productDetails];
-        updatedProductDetails.splice(index, 1);
+    // const handleRemoveProduct = (index: number) => {
+    //     const updatedProductDetails = [...JSON.stringify(formik.values.productDetails)];
+    //     updatedProductDetails.splice(index, 1);
 
-        formik.setValues((prevValues) => ({
-            ...prevValues,
-            productDetails: updatedProductDetails,
-        }));
-    };
+    //     formik.setValues((prevValues) => ({
+    //         ...prevValues,
+    //         productDetails: updatedProductDetails,
+    //     }));
+    // };
 
     const handleAddProductToOrder = (newProduct: any[]) => {
         if (newProduct.length > 0) {
@@ -509,9 +508,9 @@ export const BillModal: FC<BillModalProps> = (props) => {
                                 <Button
                                     variant="contained"
                                     type="submit"
-                                    disabled={
-                                        formik.isSubmitting || !formik.dirty
-                                    }
+                                    // disabled={
+                                    //     formik.isSubmitting || !formik.dirty
+                                    // }
                                 >
                                     Save
                                 </Button>
