@@ -53,7 +53,7 @@ export default function SignIn({}: Props) {
         }),
         onSubmit: async (values: any, helpers: any) => {
             try {
-                console.log(values);
+                console.log(values.email);
                 const res = await axios.post(
                     `${import.meta.env.VITE_API_URL}/auth/signin`,
                     {
