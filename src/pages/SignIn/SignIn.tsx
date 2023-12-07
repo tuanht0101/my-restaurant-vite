@@ -67,11 +67,8 @@ export default function SignIn({}: Props) {
 
                 const role = getRoleFromToken();
                 localStorage.setItem('role', role);
-
-                setTimeout(() => {
-                    logIn();
-                    navigate('/');
-                }, 300);
+                logIn();
+                navigate('/');
             } catch (err: any) {
                 helpers.setStatus({ success: false });
 
