@@ -62,14 +62,8 @@ export default function SignIn({}: Props) {
                     }
                 );
 
-                await localStorage.setItem(
-                    'access_token',
-                    res.data.access_token
-                );
-                await localStorage.setItem(
-                    'refresh_token',
-                    res.data.refresh_token
-                );
+                localStorage.setItem('access_token', res.data.access_token);
+                localStorage.setItem('refresh_token', res.data.refresh_token);
 
                 const role = getRoleFromToken();
                 localStorage.setItem('role', role);
