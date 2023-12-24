@@ -33,7 +33,7 @@ const OverviewBudget: React.FC<OverviewBudgetProps> = (props) => {
                 >
                     <Stack spacing={1}>
                         <Typography color="text.secondary" variant="overline">
-                            Budget
+                            Budget This Month
                         </Typography>
                         <Typography variant="h4">{value}</Typography>
                     </Stack>

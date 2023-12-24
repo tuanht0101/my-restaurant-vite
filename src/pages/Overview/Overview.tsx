@@ -119,11 +119,21 @@ export default function Overview({}: Props) {
                         },
                     }
                 );
+                const billData = await axios.get(
+                    `${
+                        import.meta.env.VITE_API_URL
+                    }/dashboard/billCurrentMonth`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    }
+                );
                 console.log(chartData);
                 setChartData(chartData);
                 const details = await GetDetails();
                 setCategory(details.category);
-                setBill(details.bill);
+                setBill(billData.data);
                 setProduct(details.product);
                 setTable(details.table);
             } catch (error) {
