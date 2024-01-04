@@ -104,7 +104,6 @@ const AddProduct: React.FC<AddProductProps> = ({
                 updatedOrderItems[existingProductIndex].total +=
                     selectedProduct.price * parseInt(quantity, 10);
                 setOrderItems(updatedOrderItems);
-                console.log('PD: ', updatedOrderItems);
                 onAddProduct(updatedOrderItems);
             } else {
                 const newOrderItem: any = {
@@ -116,7 +115,6 @@ const AddProduct: React.FC<AddProductProps> = ({
                 };
 
                 setOrderItems([...orderItems, newOrderItem]);
-                console.log('PD: ', [...orderItems, newOrderItem]);
                 onAddProduct([...orderItems, newOrderItem]);
             }
 

@@ -47,7 +47,6 @@ export default function Header({}: Props) {
         const fetchUserInfo = async () => {
             const currentUser = await getInfo();
             setUser(currentUser);
-            console.log(currentUser);
         };
 
         fetchUserInfo();

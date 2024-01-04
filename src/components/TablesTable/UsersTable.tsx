@@ -60,19 +60,16 @@ export const UsersTable: FC<UsersTableProps> = (props) => {
     const handleSelectAll = () => {
         onSelectAll?.([]);
         setLocalSelected(items.map((data: any) => data.id));
-        console.log('123', localSelected);
     };
 
     const handleDeselectAll = () => {
         onDeselectAll?.();
         setLocalSelected([]);
-        console.log(localSelected);
     };
 
     const handleSelectOne = (dataId: string) => {
         onSelectOne?.(dataId);
         setLocalSelected((prevSelected) => [...prevSelected, dataId]);
-        console.log(localSelected);
     };
 
     const handleDeselectOne = (dataId: string) => {
@@ -80,7 +77,6 @@ export const UsersTable: FC<UsersTableProps> = (props) => {
         setLocalSelected((prevSelected) =>
             prevSelected.filter((id) => id !== dataId)
         );
-        console.log(localSelected);
     };
 
     return (

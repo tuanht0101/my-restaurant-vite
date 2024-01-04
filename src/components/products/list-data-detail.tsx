@@ -142,7 +142,6 @@ export const ListDataDetailTable: FC<ListDataTableProps> = (props) => {
     };
 
     const handleSubmit = async () => {
-        console.log(draftValue);
         try {
             const response = await axios.post(
                 `${import.meta.env.VITE_API_URL}/product/filter`,
@@ -204,17 +203,14 @@ export const ListDataDetailTable: FC<ListDataTableProps> = (props) => {
     };
 
     const handleSubmitData = () => {
-        console.log('click add');
         setAddModalOpen(false);
     };
 
     const handleSubmitEditData = useCallback(() => {
-        console.log('click add', selectedModal);
         setAddModalOpen(false);
     }, []);
 
     const deleteData = async (id: number) => {
-        console.log(id);
         await axios.delete(`${import.meta.env.VITE_API_URL}/product/${id}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -223,7 +219,6 @@ export const ListDataDetailTable: FC<ListDataTableProps> = (props) => {
     };
 
     const onDelete = () => {
-        console.log(selectedDeleteId);
         deleteData(selectedDeleteId);
         setOpenDeleteModal(false);
     };
@@ -239,7 +234,6 @@ export const ListDataDetailTable: FC<ListDataTableProps> = (props) => {
                 }
             );
             setSelectedModal(response.data);
-            console.log(response);
         } catch (error) {
             console.error('Error fetching Users:', error);
             setSelectedModal(null);
@@ -249,13 +243,11 @@ export const ListDataDetailTable: FC<ListDataTableProps> = (props) => {
     const submitEditOpen = async (id: number) => {
         await fetchTable(id);
         setAddModalEditOpen(true);
-        console.log('id pa', id);
     };
 
     const handleDeleteModal = useCallback(async (id: number) => {
         setOpenDeleteModal(true);
         setSelectedDeleteId(id);
-        console.log('id delete', id);
     }, []);
 
     return (

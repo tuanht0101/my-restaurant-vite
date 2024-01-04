@@ -62,7 +62,6 @@ export const UserModal: FC<UserModalProps> = (props) => {
             phonenumber: Yup.string().required('Phonenumber is required'),
         }),
         onSubmit: async (values, { resetForm }) => {
-            console.log('Submit button clicked!');
             if (!props.data) {
                 try {
                     const response = await axios.post(
@@ -80,7 +79,6 @@ export const UserModal: FC<UserModalProps> = (props) => {
                             },
                         }
                     );
-                    console.log('respone data', response.data);
                 } catch (error) {
                     console.error('Error fetching tables:', error);
                     notifyFail();
@@ -100,23 +98,12 @@ export const UserModal: FC<UserModalProps> = (props) => {
                             },
                         }
                     );
-                    console.log('respone data', response.data);
-
-                    console.log('input: ', {
-                        role: formik.values.role,
-                        fullname: formik.values.name,
-                        phonenumber: formik.values.phonenumber,
-                    });
                 } catch (error) {
                     console.error('Error fetching tables:', error);
                     notifyFail();
                 }
             }
-            console.log('input: ', {
-                role: formik.values.role,
-                fullname: formik.values.name,
-                phonenumber: formik.values.phonenumber,
-            });
+
             props.onSubmitData(values as any);
             resetForm();
             props.onClose();

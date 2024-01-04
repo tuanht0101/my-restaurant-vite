@@ -25,7 +25,6 @@ export default function Products() {
     };
 
     const handleSubmitData = () => {
-        console.log('click add');
         setAddModalOpen(false);
     };
 

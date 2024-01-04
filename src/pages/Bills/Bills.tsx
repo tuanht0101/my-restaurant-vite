@@ -83,7 +83,6 @@ const Bills: React.FC<Props> = () => {
         });
 
     const deleteData = async (id: number) => {
-        console.log(id);
         await axios.delete(`${import.meta.env.VITE_API_URL}/bill/${id}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -102,7 +101,6 @@ const Bills: React.FC<Props> = () => {
                 }
             );
             setSelectedModal(response.data);
-            console.log(response);
         } catch (error) {
             console.error('Error fetching tables:', error);
             setSelectedModal(null);
@@ -111,14 +109,12 @@ const Bills: React.FC<Props> = () => {
 
     const handleModalEditOpen = useCallback(async (id: number) => {
         setAddModalEditOpen(true);
-        console.log('id pa', id);
         await fetchBill(id);
     }, []);
 
     const handleModalDeleteOpen = useCallback(async (id: number) => {
         setOpenDeleteModal(true);
         setSelectedDeleteId(id);
-        console.log('id delete', id);
     }, []);
 
     useEffect(() => {
@@ -133,7 +129,7 @@ const Bills: React.FC<Props> = () => {
                     }
                 );
                 setTables(response.data);
-                setPage(0);
+                setPage(page);
             } catch (error) {
                 console.error('Error fetching tables:', error);
                 setTables([]);
@@ -141,14 +137,7 @@ const Bills: React.FC<Props> = () => {
         };
         setIsDeleteSubmit(false);
         fetchBills();
-    }, [
-        accessToken,
-        addModalOpen,
-        addModalEditOpen,
-        openDeleteModal,
-        isDeleteSubmit,
-        openDeleteListModal,
-    ]);
+    }, [accessToken, addModalOpen, addModalEditOpen, isDeleteSubmit]);
 
     const handlePageChange = useCallback(
         (event: any, value: any) => {
@@ -184,7 +173,6 @@ const Bills: React.FC<Props> = () => {
     };
 
     const handleSubmitEditData = useCallback(() => {
-        console.log('click add', selectedModal);
         setAddModalOpen(false);
     }, []);
 
@@ -196,13 +184,6 @@ const Bills: React.FC<Props> = () => {
     };
 
     const onSearch = async () => {
-        console.log({
-            guessName: draftValue.name || undefined,
-            guessNumber: draftValue.phonenumber || undefined,
-            status: draftValue.status || undefined,
-            startDate: startDraftDate?.toISOString(),
-            endDate: endDraftDate?.toISOString(),
-        });
         if (isValidDates) {
             setIsErrorOnStartDate(false);
             setIsStartDateShaking(false);
@@ -255,19 +236,14 @@ const Bills: React.FC<Props> = () => {
         }, 500);
     }, []);
 
-    useEffect(() => {
-        console.log(selectedModal);
-    }, [selectedModal]);
-
     const onDelete = () => {
-        console.log(selectedDeleteId);
         deleteData(selectedDeleteId);
         setOpenDeleteModal(false);
+        setIsDeleteSubmit(true);
     };
 
     const confirmRemoveListData = async () => {
         try {
-            console.log(customersSelection.selected);
             await axios.post(
                 `${import.meta.env.VITE_API_URL}/bill/deleteMany`,
                 {

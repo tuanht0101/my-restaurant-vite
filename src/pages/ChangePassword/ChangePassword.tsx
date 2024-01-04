@@ -91,11 +91,6 @@ export default function ChangePassword({}: Props) {
                 }
                 helpers.setSubmitting(false);
             }
-            console.log('change pw: ', localStorage.getItem('access_token'));
-            console.log('change pw2: ', {
-                oldPassword: formik.values.oldPassword,
-                newPassword: formik.values.newPassword,
-            });
         },
     });
 

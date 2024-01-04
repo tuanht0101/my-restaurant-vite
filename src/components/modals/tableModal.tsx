@@ -91,7 +91,6 @@ export const TableModal: FC<TableModalProps> = (props) => {
                             },
                         }
                     );
-                    console.log('respone data', response.data);
                 } catch (error: any) {
                     console.error('Error fetching tables:', error);
 
@@ -123,7 +122,6 @@ export const TableModal: FC<TableModalProps> = (props) => {
                                 },
                             }
                         );
-                        console.log('respone data', response.data);
                     } catch (error: any) {
                         console.error('Error fetching tables:', error);
 
@@ -151,7 +149,6 @@ export const TableModal: FC<TableModalProps> = (props) => {
                                 },
                             }
                         );
-                        console.log('respone data', response.data);
                     } catch (error: any) {
                         console.error('Error fetching tables:', error);
 

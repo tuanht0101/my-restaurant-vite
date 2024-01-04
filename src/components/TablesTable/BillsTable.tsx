@@ -72,19 +72,16 @@ export const BillsTable: FC<BillsTableProps> = (props) => {
     const handleSelectAll = () => {
         onSelectAll?.([]);
         setLocalSelected(items.map((table: any) => table.id));
-        console.log('123', localSelected);
     };
 
     const handleDeselectAll = () => {
         onDeselectAll?.();
         setLocalSelected([]);
-        console.log(localSelected);
     };
 
     const handleSelectOne = (tableId: string) => {
         onSelectOne?.(tableId);
         setLocalSelected((prevSelected) => [...prevSelected, tableId]);
-        console.log(localSelected);
     };
 
     const handleDeselectOne = (tableId: string) => {
@@ -92,7 +89,6 @@ export const BillsTable: FC<BillsTableProps> = (props) => {
         setLocalSelected((prevSelected) =>
             prevSelected.filter((id) => id !== tableId)
         );
-        console.log(localSelected);
     };
 
     const formatCreatedAt = (createdAt: string) => {
@@ -210,7 +206,6 @@ export const BillsTable: FC<BillsTableProps> = (props) => {
                 }
             );
             setSelectedModal(response.data);
-            console.log(response);
         } catch (error) {
             console.error('Error fetching tables:', error);
             setSelectedModal(null);
@@ -233,7 +228,6 @@ export const BillsTable: FC<BillsTableProps> = (props) => {
                 html2canvas: { scale: 2 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
             });
-            console.log('123', selectedModal);
         }
     }, [selectedModal]);
 

@@ -57,7 +57,6 @@ export const CategoryModal: FC<UserModalProps> = (props) => {
             name: Yup.string().required('Name is required'),
         }),
         onSubmit: async (values, { resetForm }) => {
-            console.log('Submit button clicked!');
             if (!props.data) {
                 try {
                     const response = await axios.post(
@@ -71,7 +70,6 @@ export const CategoryModal: FC<UserModalProps> = (props) => {
                             },
                         }
                     );
-                    console.log('respone data', response.data);
                 } catch (error: any) {
                     console.error('Error fetching tables:', error);
 
@@ -98,11 +96,6 @@ export const CategoryModal: FC<UserModalProps> = (props) => {
                             },
                         }
                     );
-                    console.log('respone data', response.data);
-
-                    console.log('input: ', {
-                        name: formik.values.name,
-                    });
                 } catch (error: any) {
                     console.error('Error fetching tables:', error);
 
@@ -115,9 +108,7 @@ export const CategoryModal: FC<UserModalProps> = (props) => {
                     }
                 }
             }
-            console.log('input: ', {
-                name: formik.values.name,
-            });
+
             props.onSubmitData(values as any);
             resetForm();
             props.onClose();

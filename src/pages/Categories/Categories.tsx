@@ -75,7 +75,6 @@ const Categories: React.FC<Props> = () => {
         });
 
     const deleteData = async (id: number) => {
-        console.log(id);
         await axios.delete(`${import.meta.env.VITE_API_URL}/category/${id}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -102,14 +101,12 @@ const Categories: React.FC<Props> = () => {
 
     const handleModalEditOpen = useCallback(async (id: number) => {
         setAddModalEditOpen(true);
-        console.log('id pa', id);
         await fetchTable(id);
     }, []);
 
     const handleModalDeleteOpen = useCallback(async (id: number) => {
         setOpenDeleteModal(true);
         setSelectedDeleteId(id);
-        console.log('id delete', id);
     }, []);
 
     useEffect(() => {
@@ -124,6 +121,7 @@ const Categories: React.FC<Props> = () => {
                     }
                 );
                 setUsers(response.data);
+                setPage(page);
             } catch (error) {
                 console.error('Error fetching Users:', error);
                 setUsers([]);
@@ -131,13 +129,7 @@ const Categories: React.FC<Props> = () => {
         };
         setIsDeleteSubmit(false);
         fetchUsers();
-    }, [
-        accessToken,
-        addModalOpen,
-        addModalEditOpen,
-        openDeleteModal,
-        isDeleteSubmit,
-    ]);
+    }, [accessToken, addModalOpen, addModalEditOpen, isDeleteSubmit]);
 
     const handlePageChange = (event: any, value: any) => {
         setPage(value);
@@ -174,12 +166,10 @@ const Categories: React.FC<Props> = () => {
     };
 
     const handleSubmitData = () => {
-        console.log('click add');
         setAddModalOpen(false);
     };
 
     const handleSubmitEditData = useCallback(() => {
-        console.log('click add', selectedModal);
         setAddModalOpen(false);
     }, []);
 
@@ -191,7 +181,6 @@ const Categories: React.FC<Props> = () => {
     };
 
     const onSearch = async () => {
-        console.log(draftValue);
         try {
             const response = await axios.post(
                 `${import.meta.env.VITE_API_URL}/category/filter`,
@@ -216,19 +205,14 @@ const Categories: React.FC<Props> = () => {
         });
     }, []);
 
-    useEffect(() => {
-        console.log(selectedModal);
-    }, [selectedModal]);
-
     const onDelete = () => {
-        console.log(selectedDeleteId);
         deleteData(selectedDeleteId);
         setOpenDeleteModal(false);
+        setIsDeleteSubmit(true);
     };
 
     const confirmRemoveListData = async () => {
         try {
-            console.log(customersSelection.selected);
             await axios.post(
                 `${import.meta.env.VITE_API_URL}/category/deleteMany`,
                 {

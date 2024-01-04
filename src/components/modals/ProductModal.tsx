@@ -70,7 +70,6 @@ export const ProductModal: FC<ProductModalProps> = (props) => {
             price: Yup.number().required('This field is a required number'),
         }),
         onSubmit: async (values, { resetForm }) => {
-            console.log('Submit button clicked!');
             const cateResponse = await axios.post(
                 `${import.meta.env.VITE_API_URL}/category/filter`,
                 {
@@ -108,8 +107,6 @@ export const ProductModal: FC<ProductModalProps> = (props) => {
                                 },
                             }
                         );
-                        console.log('response data', response.data);
-                        console.log('categoryId', categoryId);
                     } catch (error: any) {
                         console.error('Error fetching tables:', error);
 
@@ -140,15 +137,6 @@ export const ProductModal: FC<ProductModalProps> = (props) => {
                                 },
                             }
                         );
-                        console.log('response data', response.data);
-                        console.log('categoryId', categoryId);
-                        console.log('input: ', {
-                            name: formik.values.name,
-                            description: formik.values.description,
-                            price: formik.values.price,
-                            status: formik.values.status,
-                            categoryId: categoryId, // Use categoryId here
-                        });
                     } catch (error: any) {
                         console.error('Error fetching tables:', error);
 

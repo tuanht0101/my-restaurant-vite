@@ -57,8 +57,6 @@ export const BillModal: FC<BillModalProps> = (props) => {
         return date.toLocaleDateString('en-GB', options);
     };
 
-    console.log(props.data?.productDetails);
-
     const notifyFail = () =>
         toast.error('There are some errors! Please try again!', {
             position: 'top-center',
@@ -91,7 +89,6 @@ export const BillModal: FC<BillModalProps> = (props) => {
             guessNumber: Yup.string().required('Phone Number is required'),
         }),
         onSubmit: async (values, { resetForm }) => {
-            console.log('orderItems:', orderItems);
             const productDetailsString = Array.isArray(orderItems)
                 ? orderItems.map((item) => ({
                       name: item.name,
@@ -101,7 +98,6 @@ export const BillModal: FC<BillModalProps> = (props) => {
                       quantity: item.quantity,
                   }))
                 : [];
-            console.log('Submit button clicked!');
             try {
                 const response = await axios.patch(
                     `${import.meta.env.VITE_API_URL}/bill/${props.data.id}`,
@@ -118,13 +114,6 @@ export const BillModal: FC<BillModalProps> = (props) => {
                         },
                     }
                 );
-                console.log('response data', response.data);
-                // console.log({
-                //     guessName: formik.values.guessName,
-                //     guessNumber: formik.values.guessNumber,
-                //     productDetails: orderItems,
-                //     total: currentTotal,
-                // });
             } catch (error) {
                 console.error('Error fetching tables:', error);
                 notifyFail();
@@ -192,16 +181,6 @@ export const BillModal: FC<BillModalProps> = (props) => {
         props.onClose();
     };
 
-    // const handleRemoveProduct = (index: number) => {
-    //     const updatedProductDetails = [...JSON.stringify(formik.values.productDetails)];
-    //     updatedProductDetails.splice(index, 1);
-
-    //     formik.setValues((prevValues) => ({
-    //         ...prevValues,
-    //         productDetails: updatedProductDetails,
-    //     }));
-    // };
-
     const handleAddProductToOrder = (newProduct: any[]) => {
         if (newProduct.length > 0) {
             const total = newProduct.reduce((sum, product) => {
@@ -211,40 +190,7 @@ export const BillModal: FC<BillModalProps> = (props) => {
         } else {
             setCurrentTotal(0);
         }
-        console.log('from P: ', newProduct);
         setOrderItems(newProduct);
-        // const existingProductIndex = formik.values.productDetails.findIndex(
-        //     (product: any) => product.name === newProduct.product
-        // );
-
-        // if (existingProductIndex !== -1) {
-        //     // Product already exists, update quantity
-        //     formik.setValues((prevValues) => {
-        //         const updatedProductDetails = [...prevValues.productDetails];
-        //         updatedProductDetails[existingProductIndex].quantity +=
-        //             newProduct.quantity;
-        //         return {
-        //             ...prevValues,
-        //             productDetails: updatedProductDetails,
-        //         };
-        //     });
-        // } else {
-        //     // Product doesn't exist, add new row
-        //     const modifyNewProduct = {
-        //         ...newProduct,
-        //         name: newProduct.product,
-        //         category: newProduct.category.name,
-        //         quantity: newProduct.quantity || 1,
-        //     };
-
-        //     formik.setValues((prevValues) => ({
-        //         ...prevValues,
-        //         productDetails: [
-        //             ...prevValues.productDetails,
-        //             modifyNewProduct,
-        //         ],
-        //     }));
-        // }
     };
 
     return (
@@ -505,13 +451,7 @@ export const BillModal: FC<BillModalProps> = (props) => {
                                     borderTop: '1px solid #D9D9D9',
                                 }}
                             >
-                                <Button
-                                    variant="contained"
-                                    type="submit"
-                                    // disabled={
-                                    //     formik.isSubmitting || !formik.dirty
-                                    // }
-                                >
+                                <Button variant="contained" type="submit">
                                     Save
                                 </Button>
                                 <Button

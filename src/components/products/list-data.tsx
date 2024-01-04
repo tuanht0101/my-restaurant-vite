@@ -48,7 +48,6 @@ export const ListDataTable: FC<ListDataTableProps> = (props) => {
     };
 
     const onSearch = async () => {
-        console.log(draftValue);
         try {
             const response = await axios.post(
                 `${import.meta.env.VITE_API_URL}/category/filter`,

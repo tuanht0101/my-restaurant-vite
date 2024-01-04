@@ -76,7 +76,6 @@ const User: React.FC<Props> = () => {
         });
 
     const deleteData = async (id: number) => {
-        console.log(id);
         await axios.delete(`${import.meta.env.VITE_API_URL}/user/${id}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -95,7 +94,6 @@ const User: React.FC<Props> = () => {
                 }
             );
             setSelectedModal(response.data);
-            console.log(response);
         } catch (error) {
             console.error('Error fetching Users:', error);
             setSelectedModal(null);
@@ -104,14 +102,12 @@ const User: React.FC<Props> = () => {
 
     const handleModalEditOpen = useCallback(async (id: number) => {
         setAddModalEditOpen(true);
-        console.log('id pa', id);
         await fetchTable(id);
     }, []);
 
     const handleModalDeleteOpen = useCallback(async (id: number) => {
         setOpenDeleteModal(true);
         setSelectedDeleteId(id);
-        console.log('id delete', id);
     }, []);
 
     const getIdFromToken = () => {
@@ -145,6 +141,7 @@ const User: React.FC<Props> = () => {
                     (user: any) => user.id !== currentUserId
                 );
                 setUsers(filteredUsers);
+                setPage(page);
             } catch (error) {
                 console.error('Error fetching Users:', error);
                 setUsers([]);
@@ -195,12 +192,10 @@ const User: React.FC<Props> = () => {
     };
 
     const handleSubmitData = () => {
-        console.log('click add');
         setAddModalOpen(false);
     };
 
     const handleSubmitEditData = useCallback(() => {
-        console.log('click add', selectedModal);
         setAddModalOpen(false);
     }, []);
 
@@ -212,7 +207,6 @@ const User: React.FC<Props> = () => {
     };
 
     const onSearch = async () => {
-        console.log(draftValue);
         try {
             const response = await axios.post(
                 `${import.meta.env.VITE_API_URL}/user/filter`,
@@ -243,19 +237,14 @@ const User: React.FC<Props> = () => {
         });
     }, []);
 
-    useEffect(() => {
-        console.log(selectedModal);
-    }, [selectedModal]);
-
     const onDelete = () => {
-        console.log(selectedDeleteId);
         deleteData(selectedDeleteId);
         setOpenDeleteModal(false);
+        setIsDeleteSubmit(true);
     };
 
     const confirmRemoveListData = async () => {
         try {
-            console.log(customersSelection.selected);
             await axios.post(
                 `${import.meta.env.VITE_API_URL}/user/deleteMany`,
                 {

@@ -129,7 +129,6 @@ export default function Overview({}: Props) {
                         },
                     }
                 );
-                console.log(chartData);
                 setChartData(chartData);
                 const details = await GetDetails();
                 setCategory(details.category);

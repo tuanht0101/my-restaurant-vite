@@ -76,7 +76,6 @@ const OrderPage: React.FC = () => {
                             },
                         }
                     );
-                    console.log(res.data);
                     setProducts(res.data);
                 }
             } catch (error) {
@@ -443,9 +442,6 @@ const OrderPage: React.FC = () => {
                                                 value={item.name}
                                                 key={item.id}
                                                 onClick={() =>
-                                                    // setSelectedCategoryId(
-                                                    //     cate.id
-                                                    // )
                                                     console.log(item.name)
                                                 }
                                             >
